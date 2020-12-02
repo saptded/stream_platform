@@ -21,7 +21,11 @@ add_executable(client project/src/client.cpp)
 target_link_libraries(client ${OpenCV_LIBS})
 target_link_libraries(client ${GST_LIBRARIES})
 
-add_executable(main_test main_test.cpp project/src/streamer.cpp project/src/client.cpp)
-target_link_libraries(main_test ${OpenCV_LIBS})
-target_link_libraries(main_test ${GST_LIBRARIES})
+add_executable(main_test_server main_test_server.cpp project/src/streamer.cpp project/src/client.cpp)
+target_link_libraries(main_test_server ${OpenCV_LIBS})
+target_link_libraries(main_test_server ${GST_LIBRARIES})
+
+add_executable(main_test_client main_test_client.cpp project/src/streamer.cpp project/src/client.cpp)
+target_link_libraries(main_test_client ${OpenCV_LIBS})
+target_link_libraries(main_test_client ${GST_LIBRARIES})
 

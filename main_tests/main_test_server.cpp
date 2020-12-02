@@ -1,5 +1,5 @@
 #include "streamer.hpp"
-//#include "client.hpp"
+#include "client.hpp"
 
 int main() {
 

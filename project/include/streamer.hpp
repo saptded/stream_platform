@@ -15,25 +15,30 @@
 #include <set>
 
 struct Stgs {
-    int width = 1280;
-    int height = 720;
-    double fps = 10;
+    int width = 0;
+    int height = 0;
+    double fps = 0;
+};
+
+struct Data_client {
+    std::string ip;
+    std::string client_nickname;
 };
 
 namespace sp {
 class Streamer {
  public:
-    explicit Streamer();
-    void start_stream();
+    Streamer();
     void getting_users();
     void get_camera_settings(const cv::VideoCapture& cap);
+    void start_stream();
 
  private:
     int port;
     Stgs settings;
-    std::string nickname;
+    std::string streamer_nickname;
     int max_clients_amount;
-    std::set<std::string> clients_ip;
+    std::vector<Data_client> clients;
     std::vector<cv::VideoWriter> create_ports();
 };
 }
