@@ -12,14 +12,12 @@
 
 namespace sp {
 Client::Client() {
-    std::cout << "nickname: ";
-    std::cin >> nickname;
-    std::cout << std::endl;
-    std::cout << "server_ip: ";
-    std::cin >> server_ip;
-    std::cout << std::endl;
-    std::cout << "server_port: ";
-    std::cin >> server_port;
+//    std::cout << "nickname: ";
+//    std::cin >> nickname;
+//    std::cout << "server_ip: ";
+//    std::cin >> server_ip;
+//    std::cout << "server_port: ";
+//    std::cin >> server_port;
 }
 
 void Client::connect_to_server() {

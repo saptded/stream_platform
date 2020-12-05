@@ -3,6 +3,8 @@ project(stream_platform)
 
 set(CMAKE_CXX_STANDARD 17)
 
+SET(CMAKE_CXX_FLAGS -pthread)
+
 include_directories(project/include)
 
 find_package(OpenCV REQUIRED)
@@ -21,11 +23,11 @@ add_executable(client project/src/client.cpp)
 target_link_libraries(client ${OpenCV_LIBS})
 target_link_libraries(client ${GST_LIBRARIES})
 
-add_executable(main_test_server main_test_server.cpp project/src/streamer.cpp project/src/client.cpp)
+add_executable(main_test_server main_tests/main_test_server.cpp project/src/streamer.cpp project/src/client.cpp)
 target_link_libraries(main_test_server ${OpenCV_LIBS})
 target_link_libraries(main_test_server ${GST_LIBRARIES})
 
-add_executable(main_test_client main_test_client.cpp project/src/streamer.cpp project/src/client.cpp)
+add_executable(main_test_client main_tests/main_test_client.cpp project/src/streamer.cpp project/src/client.cpp)
 target_link_libraries(main_test_client ${OpenCV_LIBS})
 target_link_libraries(main_test_client ${GST_LIBRARIES})
 

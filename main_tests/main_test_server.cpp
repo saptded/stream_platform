@@ -3,11 +3,23 @@
 
 int main() {
 
-    sp::Streamer Mike;
+    sp::Streamer streamer;
 
-    Mike.getting_users();
+    streamer.get_camera_settings();
 
-    Mike.start_stream();
+    std::thread gu(&sp::Streamer::getting_users, &streamer);
+    std::cout << gu.joinable() << std::endl;
+
+    std::thread ss(&sp::Streamer::start_stream, &streamer);
+
+//    std::cout << gu.joinable() << std::endl;
+    gu.join();
+//    std::cout << gu.joinable() << std::endl;
+    ss.join();
+
+//    streamer.getting_users();
+//
+//    streamer.start_stream();
 
 
 }

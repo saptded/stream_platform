@@ -1,6 +1,8 @@
 #include <streamer.hpp>
 #include <utility>
 
+std::mutex mtx;
+
 namespace sp {
 Streamer::Streamer() {
     std::cout << "nickname: ";
@@ -11,10 +13,7 @@ Streamer::Streamer() {
     std::cin >> max_clients_amount;
 }
 
-std::vector<cv::VideoWriter> Streamer::create_ports() {
-    std::vector<cv::VideoWriter> ports;
-
-    for (const auto& client : clients) {
+void Streamer::create_video_port(std::string client_ip) {
         std::string gst_pipline = "appsrc "
                                   "! videoconvert "
                                   "! video/x-raw, format=YUY2,"
@@ -24,7 +23,7 @@ std::vector<cv::VideoWriter> Streamer::create_ports() {
                                   "! jpegenc "
                                   "! rtpjpegpay "
                                   "! udpsink "
-                                  "host = " + client.ip + " "
+                                  "host = " + client_ip + " "
                                   "port = " + std::to_string(port);
 
         cv::VideoWriter writer(gst_pipline, cv::CAP_GSTREAMER, 0, (int)settings.fps,
@@ -33,10 +32,9 @@ std::vector<cv::VideoWriter> Streamer::create_ports() {
             throw "writer error";
         }
 
-        ports.push_back(writer);
-    }
-
-    return ports;
+        mtx.lock();
+        video_ports.push_back(writer);
+        mtx.unlock();
 }
 
 void Streamer::getting_users() {
@@ -96,6 +94,8 @@ void Streamer::getting_users() {
 
             clients.push_back(client);
 
+            create_video_port(client.ip);
+
             send(clientSocket, "connected", 9, 0);
 
             close(clientSocket);
@@ -105,13 +105,15 @@ void Streamer::getting_users() {
     close(tcp_socket);
 }
 
-void Streamer::get_camera_settings(const cv::VideoCapture& cap) {
+void Streamer::get_camera_settings() {
+    cv::VideoCapture cap(0);
     settings.width = static_cast<int>(cap.get(cv::CAP_PROP_FRAME_WIDTH));
     settings.height = static_cast<int>(cap.get(cv::CAP_PROP_FRAME_HEIGHT));
     settings.fps = cap.get(cv::CAP_PROP_FPS);
 }
 
 void Streamer::start_stream() {
+
     cv::VideoCapture cap(0);
     cv::Mat frame;
 
@@ -119,20 +121,24 @@ void Streamer::start_stream() {
         throw "camera error";
     }
 
-    get_camera_settings(cap);
+    create_video_port("fake_ip");
 
-    std::vector<cv::VideoWriter> clients_ports = create_ports();
+//    get_camera_settings(cap);
+
+//    std::vector<cv::VideoWriter> clients_ports = create_ports();
 
     while (true) {
         cap >> frame;
 
-        for (auto client_port : clients_ports) {
-            client_port << frame;
+        for (auto video_port : video_ports) {
+            video_port << frame;
         }
 
-        if (cv::waitKey(1) == 27) {
-            break;
-        }
+//        std::cout << video_ports.size();
+
+//        if (cv::waitKey(1) == 27) {
+//            break;
+//        }
     }
 }
 

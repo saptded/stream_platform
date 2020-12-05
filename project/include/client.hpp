@@ -11,9 +11,9 @@ class Client {
     void connect_to_server();
 
  private:
-    int server_port = 0;
-    std::string nickname;
-    std::string server_ip;
+    int server_port = 8080;
+    std::string nickname = "Kamilya";
+    std::string server_ip = "192.168.0.111";
 };
 }  // namespace sp
 

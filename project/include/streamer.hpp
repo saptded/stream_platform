@@ -13,6 +13,8 @@
 #include <cstring>
 #include <string>
 #include <set>
+#include <thread>
+#include <mutex>
 
 struct Stgs {
     int width = 0;
@@ -30,7 +32,7 @@ class Streamer {
  public:
     Streamer();
     void getting_users();
-    void get_camera_settings(const cv::VideoCapture& cap);
+    void get_camera_settings();
     void start_stream();
 
  private:
@@ -39,7 +41,8 @@ class Streamer {
     std::string streamer_nickname;
     int max_clients_amount;
     std::vector<Data_client> clients;
-    std::vector<cv::VideoWriter> create_ports();
+    std::vector<cv::VideoWriter> video_ports;
+    void create_video_port(std::string client_ip);
 };
 }
 
