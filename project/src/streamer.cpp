@@ -7,34 +7,74 @@ namespace sp {
 Streamer::Streamer() {
     std::cout << "nickname: ";
     std::cin >> streamer_nickname;
-    std::cout << "port: ";
-    std::cin >> port;
-    std::cout << "max clients amount: ";
-    std::cin >> max_clients_amount;
+//    std::cout << "max clients amount: ";
+//    std::cin >> max_clients_amount;
 }
 
-void Streamer::create_video_port(std::string client_ip) {
-        std::string gst_pipline = "appsrc "
-                                  "! videoconvert "
-                                  "! video/x-raw, format=YUY2,"
-                                  "width = " + std::to_string(settings.width) + ","
-                                  "height = " + std::to_string(settings.height) + ","
-                                  "framerate = " + std::to_string((int)settings.fps) + "/1 "
-                                  "! jpegenc "
-                                  "! rtpjpegpay "
-                                  "! udpsink "
-                                  "host = " + client_ip + " "
-                                  "port = " + std::to_string(port);
+void Streamer::create_audio_port(std::string client_ip) {
+    gst_init(nullptr, nullptr);
 
-        cv::VideoWriter writer(gst_pipline, cv::CAP_GSTREAMER, 0, (int)settings.fps,
-                               cv::Size(settings.width, settings.height), true);
-        if (!writer.isOpened()) {
-            throw "writer error";
-        }
+    GMainLoop *loop = g_main_loop_new(nullptr, false);
 
-        mtx.lock();
-        video_ports.push_back(writer);
-        mtx.unlock();
+    std::string prt = std::to_string(port + 1);
+    char *c_port = const_cast<char *>(prt.c_str());
+    char *c_host = const_cast<char *>(client_ip.c_str());
+
+    gchar *gst_pipeline = g_strconcat("pulsesrc "
+                                      "! audioconvert "
+                                      "! audio/x-raw,"
+                                      "channels=1,depth=16,width=16,rate=22000 "
+                                      "! rtpL16pay "
+                                      "! udpsink host=",
+                                      "127.0.0.1", " port=", c_port, nullptr);
+
+    gchar *descr = g_strdup(gst_pipeline);
+
+    GError *error = nullptr;
+    GstElement *pipeline = gst_parse_launch(descr, &error);
+
+    if (error) {
+        g_print("could not construct pipeline: %s\n", error->message);
+        g_error_free(error);
+        throw "audio pipeline error";
+    }
+
+    gst_element_set_state(GST_ELEMENT(pipeline), GST_STATE_PLAYING);
+
+    g_main_loop_run(loop);
+}
+
+void Streamer::create_video_port(const std::string &client_ip) {
+    std::string gst_pipline = "appsrc "
+                              "! videoconvert "
+                              "! video/x-raw, format=YUY2,"
+                              "width = " +
+                              std::to_string(settings.width) +
+                              ","
+                              "height = " +
+                              std::to_string(settings.height) +
+                              ","
+                              "framerate = " +
+                              std::to_string((int)settings.fps) +
+                              "/1 "
+                              "! jpegenc "
+                              "! rtpjpegpay "
+                              "! udpsink "
+                              "host = " +
+                              client_ip +
+                              " "
+                              "port = " +
+                              std::to_string(port);
+
+    cv::VideoWriter writer(gst_pipline, cv::CAP_GSTREAMER, 0, (int)settings.fps,
+                           cv::Size(settings.width, settings.height), true);
+    if (!writer.isOpened()) {
+        throw "writer error";
+    }
+
+    mtx.lock();
+    video_ports.push_back(writer);
+    mtx.unlock();
 }
 
 void Streamer::getting_users() {
@@ -48,7 +88,7 @@ void Streamer::getting_users() {
     hint.sin_port = htons(port);
     inet_pton(AF_INET, "0.0.0.0", &hint.sin_addr);
 
-    if (bind(tcp_socket, (sockaddr*)&hint, sizeof(hint)) == -1) {
+    if (bind(tcp_socket, (sockaddr *)&hint, sizeof(hint)) == -1) {
         throw "bind error";
     }
 
@@ -65,38 +105,44 @@ void Streamer::getting_users() {
     std::set<std::string> ips;
 
     while (i < max_clients_amount) {
-        int clientSocket = accept(tcp_socket, (sockaddr*)&client_sock, &client_sock_size);
+        int clientSocket = accept(tcp_socket, (sockaddr *)&client_sock, &client_sock_size);
 
         if (clientSocket > 0) {
             memset(buf, 0, 4096);
             memset(host, 0, NI_MAXHOST);
             memset(service, 0, NI_MAXSERV);
-            if (getnameinfo((sockaddr*)&client_sock, sizeof(client_sock), host, NI_MAXHOST, service, NI_MAXSERV, 0) !=
-                0) {
-                throw "getting ip error";
-            }
+//            if (getnameinfo((sockaddr *)&client_sock, sizeof(client_sock), host, NI_MAXHOST, service, NI_MAXSERV, 0) !=
+//                0) {
+//                throw "getting ip error";
+//            }
 
-            if (ips.count(std::string(host)) == 0) {
+            if (ips.count(inet_ntoa(client_sock.sin_addr)) == 0) {
                 int bytesReceived = recv(clientSocket, buf, 4096, 0);
                 if (bytesReceived == -1) {
                     throw "recv error";
                 }
 
                 client.client_nickname = std::string(buf);
-                client.ip = std::string(host);
+                client.ip = inet_ntoa(client_sock.sin_addr);
 
-                ips.insert(std::string(host));
+                ips.insert(inet_ntoa(client_sock.sin_addr));
 
                 std::cout << client.client_nickname << " connected" << std::endl;
 
+                clients.push_back(client);
+
+                create_video_port(client.ip);
+
+                mtx.lock();
+                audio_ports.emplace_back(&Streamer::create_audio_port, this, client.ip);
+                mtx.unlock();
+
+                send(clientSocket, "connected", 10, 0);
+
                 i++;
+            } else {
+                send(clientSocket, "you are already connected", 26, 0);
             }
-
-            clients.push_back(client);
-
-            create_video_port(client.ip);
-
-            send(clientSocket, "connected", 9, 0);
 
             close(clientSocket);
         }
@@ -113,7 +159,14 @@ void Streamer::get_camera_settings() {
 }
 
 void Streamer::start_stream() {
+//    std::thread video(&Streamer::video_send, this);
+    std::thread audio(&Streamer::audio_send, this);
 
+//    video.join();
+    audio.join();
+}
+
+void Streamer::video_send() {
     cv::VideoCapture cap(0);
     cv::Mat frame;
 
@@ -121,11 +174,7 @@ void Streamer::start_stream() {
         throw "camera error";
     }
 
-    create_video_port("fake_ip");
-
-//    get_camera_settings(cap);
-
-//    std::vector<cv::VideoWriter> clients_ports = create_ports();
+    create_video_port("127.0.0.1");
 
     while (true) {
         cap >> frame;
@@ -134,12 +183,90 @@ void Streamer::start_stream() {
             video_port << frame;
         }
 
-//        std::cout << video_ports.size();
+        //        std::cout << video_ports.size();
 
-//        if (cv::waitKey(1) == 27) {
-//            break;
-//        }
+        //        if (cv::waitKey(1) == 27) {
+        //            break;
+        //        }
     }
+}
+
+void Streamer::audio_send() {
+    while (1) {
+        for (auto &audio_port : audio_ports) {
+            if (audio_port.joinable()) {
+                audio_port.join();
+            }
+        }
+    }
+}
+
+std::string Streamer::get_local_ip() {
+    QList<QHostAddress> list = QNetworkInterface::allAddresses();
+    QString str;
+    std::string local_ip;
+
+    for(int nIter=0; nIter<list.count(); nIter++) {
+        if(!list[nIter].isLoopback())
+            if (list[nIter].protocol() == QAbstractSocket::IPv4Protocol )
+                str = list[nIter].toString();
+        local_ip = str.toUtf8().constData();
+        if (!local_ip.empty()) {
+            break;
+        }
+    }
+
+    return local_ip;
+}
+
+void Streamer::create_link() {
+    std::string local_ip = get_local_ip();
+    std::string enc;
+    std::string data = local_ip + " " + std::to_string(port);
+
+    enc.push_back('.');
+    for (auto d : data) {
+        if (d == '0') {
+            enc.push_back('a');
+        }
+        if (d == '1') {
+            enc.push_back('r');
+        }
+        if (d == '2') {
+            enc.push_back('s');
+        }
+        if (d == '3') {
+            enc.push_back('f');
+        }
+        if (d == '4') {
+            enc.push_back('o');
+        }
+        if (d == '5') {
+            enc.push_back('p');
+        }
+        if (d == '6') {
+            enc.push_back('d');
+        }
+        if (d == '7') {
+            enc.push_back('k');
+        }
+        if (d == '8') {
+            enc.push_back('j');
+        }
+        if (d == '9') {
+            enc.push_back('g');
+        }
+        if (d == '.') {
+            enc.push_back('z');
+        }
+        if (d == ' ') {
+            enc.push_back('/');
+        }
+    }
+
+    enc += "/hosthorn:" + streamer_nickname;
+
+    std::cout << "link to conference: " << enc << std::endl;
 }
 
 }  // namespace sp
