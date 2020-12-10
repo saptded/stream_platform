@@ -8,11 +8,7 @@ Streamer::Streamer() {
     std::cout << "nickname: ";
     std::cin >> streamer_nickname;
 
-    //    if (port % 2 == 0) {
-    //        port++;
-    //    } else {
-    //        port--;
-    //    }
+
     //    std::cout << "max clients amount: ";
     //    std::cin >> max_clients_amount;
 }
@@ -51,8 +47,9 @@ void Streamer::create_audio_port(const std::string& client_ip) {
 
     gst_element_set_state(GST_ELEMENT(pipeline), GST_STATE_PLAYING);
 
-    gst_element_set_state (pipeline, GST_STATE_NULL);
     g_main_loop_run(loop);
+
+    gst_element_set_state (pipeline, GST_STATE_NULL);
     gst_object_unref (pipeline);
     g_error_free(error);
     g_main_loop_unref (loop);
@@ -81,15 +78,14 @@ void Streamer::create_video_port(const std::string &client_ip) {
                               "port = " +
                               std::to_string(port);
 
-    cv::VideoWriter writer(gst_pipline, cv::CAP_GSTREAMER, 0, (int)settings.fps,
-                           cv::Size(settings.width, settings.height), true);
-    if (!writer.isOpened()) {
+    mtx.lock();
+    video_ports.emplace_back(gst_pipline, cv::CAP_GSTREAMER, 0, (int)settings.fps,
+                             cv::Size(settings.width, settings.height), true);
+    mtx.unlock();
+
+    if (!video_ports.back().isOpened()) {
         throw "writer error";
     }
-
-    mtx.lock();
-    video_ports.push_back(writer);
-    mtx.unlock();
 }
 
 void Streamer::getting_users() {
@@ -113,27 +109,16 @@ void Streamer::getting_users() {
     socklen_t client_sock_size = sizeof(client_sock);
 
     int i = 0;
-    char buf[4096];
+    std::string buf(4096, ' ');
     Data_client client;
-    char host[NI_MAXHOST];
-    char service[NI_MAXSERV];
     std::set<std::string> ips;
 
     while (i < max_clients_amount) {
         int clientSocket = accept(tcp_socket, (sockaddr *)&client_sock, &client_sock_size);
 
         if (clientSocket > 0) {
-            memset(buf, 0, 4096);
-            memset(host, 0, NI_MAXHOST);
-            memset(service, 0, NI_MAXSERV);
-            //            if (getnameinfo((sockaddr *)&client_sock, sizeof(client_sock), host, NI_MAXHOST, service,
-            //            NI_MAXSERV, 0) !=
-            //                0) {
-            //                throw "getting ip error";
-            //            }
-
             if (ips.count(inet_ntoa(client_sock.sin_addr)) == 0) {
-                int bytesReceived = recv(clientSocket, buf, 4096, 0);
+                int bytesReceived = recv(clientSocket, buf.data(), buf.size(), 0);  // buf.data(), buf.size()
                 if (bytesReceived == -1) {
                     throw "recv error";
                 }
@@ -149,9 +134,7 @@ void Streamer::getting_users() {
 
                 create_video_port(client.ip);
 
-                mtx.lock();
-                audio_ports.emplace_back(&Streamer::create_audio_port, this, client.ip);
-                mtx.unlock();
+//                audio_ports.emplace_back(&Streamer::create_audio_port, this, client.ip);
 
                 send(clientSocket, "connected", 10, 0);
 
@@ -174,16 +157,18 @@ void Streamer::get_camera_settings() {
     settings.fps = cap.get(cv::CAP_PROP_FPS);
 }
 
-void Streamer::start_stream() {
-    while (1) {
-        if (!clients.empty()) {
-//            std::thread video(&Streamer::video_send, this);
-            std::thread audio(&Streamer::audio_send, this);
+void Streamer::start_video_stream() {
+//    auto it = clients.begin();
+//    for (auto &[ip, client]: clients) {
+//
+//    }
 
-//            video.join();
-            audio.join();
-        }
-    }
+    std::thread video(&Streamer::video_send, this);
+    std::thread audio(&Streamer::audio_send, this);
+
+
+    video.join();
+    audio.join();
 }
 
 void Streamer::video_send() {
@@ -210,12 +195,12 @@ void Streamer::video_send() {
 }
 
 void Streamer::audio_send() {
+    int size = clients.size();
     while (1) {
-        for (auto &audio_port : audio_ports) {
-            if (audio_port.joinable()) {
-                audio_port.join();
-            }
-        }
+      if (clients.size() != size) {
+          audio_ports.emplace_back(&Streamer::create_audio_port, this, clients.back().ip);
+          size = clients.size();
+      }
     }
 }
 
@@ -285,6 +270,11 @@ void Streamer::create_link() {
     enc += "/hosthorn:" + streamer_nickname;
 
     std::cout << "link to conference: " << enc << std::endl;
+}
+Streamer::~Streamer() {
+    for (auto & thread: audio_ports) {
+        thread.join();
+    }
 }
 
 }  // namespace sp

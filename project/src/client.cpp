@@ -77,7 +77,7 @@ void Client::start_watch() {
         std::thread audio(&Client::audio_recieve, this);
 //    WORKER worker{*this};
 //    worker.start();
-    //    video_recieve();
+//        video_recieve();
         audio.join();
 //    video.join();
 //    worker.wait();
@@ -101,7 +101,7 @@ void Client::video_recieve() {
 
     while (true) {
         cap >> frame;
-        QImage q_image{};
+//        QImage q_image{};
 
         imshow("cap", frame);
 

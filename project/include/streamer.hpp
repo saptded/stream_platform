@@ -31,21 +31,37 @@ struct Data_client {
     std::string client_nickname;
 };
 
+struct Client {
+    std::string nick;
+    std::thread audio;
+    std::thread chat;
+};
+
 namespace sp {
 class Streamer {
  public:
     Streamer();
+    ~Streamer();
     void getting_users();
     void get_camera_settings();
-    void start_stream();
+    void start_video_stream();
     void create_link();
 
  private:
-    int port = 8081;
+    int port = 8080;
     Stgs settings;
     std::string streamer_nickname;
     int max_clients_amount = 10;
     std::vector<Data_client> clients;
+//    std::map<std::string, Client> clients;
+    /*
+     * clients[ip] = Client{
+     *      nick
+     *      std::thread{&Stramer... ip}
+     * };
+     *
+     *
+     */
     std::vector<cv::VideoWriter> video_ports;
     std::vector<std::thread> audio_ports;
     void video_send();
