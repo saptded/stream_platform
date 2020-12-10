@@ -7,11 +7,17 @@ namespace sp {
 Streamer::Streamer() {
     std::cout << "nickname: ";
     std::cin >> streamer_nickname;
-//    std::cout << "max clients amount: ";
-//    std::cin >> max_clients_amount;
+
+    //    if (port % 2 == 0) {
+    //        port++;
+    //    } else {
+    //        port--;
+    //    }
+    //    std::cout << "max clients amount: ";
+    //    std::cin >> max_clients_amount;
 }
 
-void Streamer::create_audio_port(std::string client_ip) {
+void Streamer::create_audio_port(const std::string& client_ip) {
     gst_init(nullptr, nullptr);
 
     GMainLoop *loop = g_main_loop_new(nullptr, false);
@@ -26,7 +32,7 @@ void Streamer::create_audio_port(std::string client_ip) {
                                       "channels=1,depth=16,width=16,rate=22000 "
                                       "! rtpL16pay "
                                       "! udpsink host=",
-                                      "127.0.0.1", " port=", c_port, nullptr);
+                                      c_host, " port=", c_port, nullptr);
 
     gchar *descr = g_strdup(gst_pipeline);
 
@@ -35,13 +41,22 @@ void Streamer::create_audio_port(std::string client_ip) {
 
     if (error) {
         g_print("could not construct pipeline: %s\n", error->message);
+        g_main_loop_run(loop);
+        gst_object_unref (pipeline);
         g_error_free(error);
+        g_main_loop_unref (loop);
+        g_free(descr);
         throw "audio pipeline error";
     }
 
     gst_element_set_state(GST_ELEMENT(pipeline), GST_STATE_PLAYING);
 
+    gst_element_set_state (pipeline, GST_STATE_NULL);
     g_main_loop_run(loop);
+    gst_object_unref (pipeline);
+    g_error_free(error);
+    g_main_loop_unref (loop);
+    g_free(descr);
 }
 
 void Streamer::create_video_port(const std::string &client_ip) {
@@ -111,10 +126,11 @@ void Streamer::getting_users() {
             memset(buf, 0, 4096);
             memset(host, 0, NI_MAXHOST);
             memset(service, 0, NI_MAXSERV);
-//            if (getnameinfo((sockaddr *)&client_sock, sizeof(client_sock), host, NI_MAXHOST, service, NI_MAXSERV, 0) !=
-//                0) {
-//                throw "getting ip error";
-//            }
+            //            if (getnameinfo((sockaddr *)&client_sock, sizeof(client_sock), host, NI_MAXHOST, service,
+            //            NI_MAXSERV, 0) !=
+            //                0) {
+            //                throw "getting ip error";
+            //            }
 
             if (ips.count(inet_ntoa(client_sock.sin_addr)) == 0) {
                 int bytesReceived = recv(clientSocket, buf, 4096, 0);
@@ -159,11 +175,15 @@ void Streamer::get_camera_settings() {
 }
 
 void Streamer::start_stream() {
-//    std::thread video(&Streamer::video_send, this);
-    std::thread audio(&Streamer::audio_send, this);
+    while (1) {
+        if (!clients.empty()) {
+//            std::thread video(&Streamer::video_send, this);
+            std::thread audio(&Streamer::audio_send, this);
 
-//    video.join();
-    audio.join();
+//            video.join();
+            audio.join();
+        }
+    }
 }
 
 void Streamer::video_send() {
@@ -173,8 +193,6 @@ void Streamer::video_send() {
     if (!cap.isOpened()) {
         throw "camera error";
     }
-
-    create_video_port("127.0.0.1");
 
     while (true) {
         cap >> frame;
@@ -206,9 +224,9 @@ std::string Streamer::get_local_ip() {
     QString str;
     std::string local_ip;
 
-    for(int nIter=0; nIter<list.count(); nIter++) {
-        if(!list[nIter].isLoopback())
-            if (list[nIter].protocol() == QAbstractSocket::IPv4Protocol )
+    for (int nIter = 0; nIter < list.count(); nIter++) {
+        if (!list[nIter].isLoopback())
+            if (list[nIter].protocol() == QAbstractSocket::IPv4Protocol)
                 str = list[nIter].toString();
         local_ip = str.toUtf8().constData();
         if (!local_ip.empty()) {

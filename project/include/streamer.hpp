@@ -18,6 +18,7 @@
 #include <vector>
 #include <QtNetwork/QtNetwork>
 #include <QtNetwork/QNetworkInterface>
+#include <cmath>
 
 struct Stgs {
     int width = 0;
@@ -50,7 +51,7 @@ class Streamer {
     void video_send();
     void audio_send();
     std::string get_local_ip();
-    void create_audio_port(std::string client_ip);
+    void create_audio_port(const std::string& client_ip);
     void create_video_port(const std::string& client_ip);
 };
 }

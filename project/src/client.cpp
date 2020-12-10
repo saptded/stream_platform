@@ -140,13 +140,23 @@ void Client::audio_recieve() {
 
     if (error) {
         g_print("could not construct pipeline: %s\n", error->message);
-        g_error_free(error);
+        gst_element_set_state (pipeline, GST_STATE_NULL);
+        gst_object_unref (pipeline);
+        g_clear_error(&error);
+        g_main_loop_unref (loop);
+        g_free(descr);
         throw "pipeline error";
     }
 
     gst_element_set_state(GST_ELEMENT(pipeline), GST_STATE_PLAYING);
 
     g_main_loop_run(loop);
+
+    gst_element_set_state (pipeline, GST_STATE_NULL);
+    gst_object_unref (pipeline);
+    g_clear_error(&error);
+    g_main_loop_unref (loop);
+    g_free(descr);
 }
 void Client::get_link() {
     std::string data;
