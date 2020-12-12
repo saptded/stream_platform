@@ -3,6 +3,10 @@ project(stream_platform)
 
 set(CMAKE_CXX_STANDARD 17)
 
+#set(CMAKE_AUTOUIC ON)
+#set(CMAKE_AUTOMOC ON)
+#set(CMAKE_AUTORCC ON)
+
 SET(CMAKE_CXX_FLAGS -pthread)
 
 include_directories(project/include)
@@ -33,3 +37,20 @@ target_link_libraries(main_test_server streamer client)
 add_executable(main_test_client main_tests/main_test_client.cpp)
 target_link_libraries(main_test_client streamer client)
 
+#add_executable(main_qt
+#        main_qt.cpp
+#        main_window/mainwindow.cpp
+#        main_window/mainwindow.ui
+#        video_reciever/video_receiver.cpp
+#        audio_thread/audio_thread.cpp)
+#target_include_directories(main_qt PUBLIC
+#        main_window
+#        video_reciever/
+#        audio_thread/)
+#
+#target_link_libraries(main_qt streamer client)
+
+
+#target_link_libraries(main_qt_client PRIVATE Qt5::Widgets Qt5::Core Qt5::Gui ${OpenCV_LIBS})
+
+#include(cmake-build-debug/cmake_install.cmake)

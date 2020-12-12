@@ -73,13 +73,13 @@ void Client::connect_to_server() {
 
 void Client::start_watch() {
     //    QThread video(&Client::video_recieve, this);
-//    std::thread video(&Client::video_recieve, this);
+    std::thread video(&Client::video_recieve, this);
         std::thread audio(&Client::audio_recieve, this);
 //    WORKER worker{*this};
 //    worker.start();
 //        video_recieve();
         audio.join();
-//    video.join();
+    video.join();
 //    worker.wait();
 }
 
@@ -105,9 +105,9 @@ void Client::video_recieve() {
 
         imshow("cap", frame);
 
-        if (cv::waitKey(1) == 27) {
-            break;
-        }
+//        if (cv::waitKey(1) == 27) {
+//            break;
+//        }
     }
 }
 void Client::audio_recieve() {
@@ -224,6 +224,9 @@ void Client::get_link() {
 
 
 
+}
+int Client::get_server_port() {
+    return server_port;
 }
 
 }  // namespace sp

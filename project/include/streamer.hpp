@@ -48,7 +48,7 @@ class Streamer {
     void create_link();
 
  private:
-    int port = 8080;
+    int port = 8081;
     Stgs settings;
     std::string streamer_nickname;
     int max_clients_amount = 10;

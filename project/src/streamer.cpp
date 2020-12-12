@@ -109,7 +109,7 @@ void Streamer::getting_users() {
     socklen_t client_sock_size = sizeof(client_sock);
 
     int i = 0;
-    std::string buf(4096, ' ');
+    std::string buf;
     Data_client client;
     std::set<std::string> ips;
 
@@ -117,12 +117,13 @@ void Streamer::getting_users() {
         int clientSocket = accept(tcp_socket, (sockaddr *)&client_sock, &client_sock_size);
 
         if (clientSocket > 0) {
+            buf.resize(4096);
             if (ips.count(inet_ntoa(client_sock.sin_addr)) == 0) {
                 int bytesReceived = recv(clientSocket, buf.data(), buf.size(), 0);  // buf.data(), buf.size()
                 if (bytesReceived == -1) {
                     throw "recv error";
                 }
-
+                buf.resize(bytesReceived);
                 client.client_nickname = std::string(buf);
                 client.ip = inet_ntoa(client_sock.sin_addr);
 
@@ -195,8 +196,15 @@ void Streamer::video_send() {
 }
 
 void Streamer::audio_send() {
+//    std::set<std::string> used_ip;
     int size = clients.size();
-    while (1) {
+    while (true) {
+//        for (auto & client : clients) {
+//            if (used_ip.count(client.ip) == 0) {
+//                audio_ports.emplace_back(&Streamer::create_audio_port, this, clients.back().ip);
+//                used_ip.emplace(client.ip);
+//            }
+//        }
       if (clients.size() != size) {
           audio_ports.emplace_back(&Streamer::create_audio_port, this, clients.back().ip);
           size = clients.size();

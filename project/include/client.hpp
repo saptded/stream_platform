@@ -17,10 +17,11 @@ class Client {
     void connect_to_server();
     void get_link();
     void video_recieve();
+    int get_server_port();
 
  private:
     int server_port;
-    std::string nickname = "Kamilya";
+    std::string nickname = "Kamilya_local";
     std::string server_ip;
     void audio_recieve();
 };
