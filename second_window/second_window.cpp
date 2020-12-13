@@ -1,0 +1,151 @@
+#include "second_window.h"
+
+#include "./ui_second_window.h"
+
+#include <QLineEdit>
+#include <QWidget>
+#include <client.hpp>
+#include <streamer.hpp>
+
+second_window::second_window(QWidget *parent) : QMainWindow(parent), ui(new Ui::second_window) {
+    _parent = parent;
+    ui->setupUi(this);
+}
+
+second_window::~second_window() { delete ui; }
+
+void second_window::on_create_button_clicked() {
+    role_id = 1;
+
+    ui->data_widget->show();
+    sp::Streamer host(_nick.toStdString());
+
+    std::string str_link = host.create_link();
+    QString link = QString::fromUtf8(str_link.c_str());
+
+    QFont my_font("Ubuntu Mono", 14);
+    my_font.setItalic(true);
+    QFont my_font2("Ubuntu Mono", 42);
+    my_font2.setItalic(true);
+
+    back = new QPushButton("Back");
+    connect(back, &QPushButton::clicked, this, &second_window::back_button);
+    back->setFont(my_font);
+
+    role = new QLabel("HOST", this);
+    role->setFont(my_font2);
+
+    link_to_conf = new QLabel("link to conference:", this);
+    link_to_conf->setFont(my_font);
+    data = new QLineEdit(link);
+    data->setReadOnly(true);
+    data->setFont(my_font);
+
+    extra_set = new QPushButton("settings");
+    connect(extra_set, &QPushButton::clicked, this, &second_window::settings_button);
+
+    data->setAlignment(Qt::AlignCenter);
+    link_to_conf->setAlignment(Qt::AlignCenter);
+    role->setAlignment(Qt::AlignCenter);
+
+    ui->role_buttons_widget->hide();
+
+    ui->link_lay->addWidget(link_to_conf);
+    ui->link_lay->addWidget(data);
+    ui->label_lay->addWidget(role);
+    ui->show_extra_settings_lay->addWidget(extra_set);
+    ui->main_buttons_lay->addWidget(back);
+}
+
+void second_window::on_join_button_clicked() {
+    role_id = 2;
+
+    ui->data_widget->show();
+    sp::Client client(_nick.toStdString());
+
+    QFont my_font("Ubuntu Mono", 14);
+    my_font.setItalic(true);
+    QFont my_font2("Ubuntu Mono", 42);
+    my_font2.setItalic(true);
+
+    back = new QPushButton("Back");
+    connect(back, &QPushButton::clicked, this, &second_window::back_button);
+    back->setFont(my_font);
+
+    role = new QLabel("CLIENT", this);
+    role->setFont(my_font2);
+
+    link_to_conf = new QLabel("enter link to conference:", this);
+    link_to_conf->setFont(my_font);
+
+    data = new QLineEdit();
+    data->setFont(my_font);
+
+    data->setAlignment(Qt::AlignCenter);
+    link_to_conf->setAlignment(Qt::AlignCenter);
+    role->setAlignment(Qt::AlignCenter);
+
+    ui->role_buttons_widget->hide();
+
+    ui->link_lay->addWidget(link_to_conf);
+    ui->link_lay->addWidget(data);
+    ui->label_lay->addWidget(role);
+    ui->main_buttons_lay->addWidget(back);
+}
+
+void second_window::set_nick(QString &nick) { _nick = std::move(nick); }
+
+void second_window::back_button() {
+    ui->role_buttons_widget->show();
+    ui->data_widget->hide();
+    delete back;
+    delete data;
+    delete link_to_conf;
+    delete role;
+    if (role_id == 1) {
+        delete extra_set;
+        if (settings_status == 1 || settings_status == 2){
+            delete m_cl;
+            delete max_clients;
+            delete c_i;
+            delete camera_index;
+            settings_status = 0;
+        }
+    }
+    role_id = 0;
+}
+
+void second_window::on_return_button_clicked() {
+    _parent->show();
+    delete this;
+}
+
+void second_window::settings_button() {
+    if (settings_status == 0) {
+        QFont my_font("Ubuntu Mono", 14);
+        my_font.setItalic(true);
+
+        m_cl = new QLabel("max clients:  ", this);
+        m_cl->setFont(my_font);
+        max_clients = new QLineEdit();
+        max_clients->setFont(my_font);
+
+        c_i = new QLabel("camera index: ", this);
+        c_i->setFont(my_font);
+        camera_index = new QLineEdit();
+        camera_index->setFont(my_font);
+
+        ui->max_clients_lay->addWidget(m_cl);
+        ui->max_clients_lay->addWidget(max_clients);
+        ui->camera_index_lay->addWidget(c_i);
+        ui->camera_index_lay->addWidget(camera_index);
+
+        settings_status = 1;
+    } else if (settings_status == 1) {
+        ui->settings_widget->hide();
+        settings_status = 2;
+    }else if (settings_status == 2) {
+        ui->settings_widget->show();
+        settings_status = 1;
+    }
+}

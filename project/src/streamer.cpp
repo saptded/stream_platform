@@ -4,14 +4,7 @@
 std::mutex mtx;
 
 namespace sp {
-Streamer::Streamer() {
-    std::cout << "nickname: ";
-    std::cin >> streamer_nickname;
-
-
-    //    std::cout << "max clients amount: ";
-    //    std::cin >> max_clients_amount;
-}
+Streamer::Streamer(std::string nick) : streamer_nickname(std::move(nick)) {}
 
 void Streamer::create_audio_port(const std::string& client_ip) {
     gst_init(nullptr, nullptr);
@@ -230,7 +223,7 @@ std::string Streamer::get_local_ip() {
     return local_ip;
 }
 
-void Streamer::create_link() {
+std::string Streamer::create_link() {
     std::string local_ip = get_local_ip();
     std::string enc;
     std::string data = local_ip + " " + std::to_string(port);
@@ -277,7 +270,7 @@ void Streamer::create_link() {
 
     enc += "/hosthorn:" + streamer_nickname;
 
-    std::cout << "link to conference: " << enc << std::endl;
+    return enc;
 }
 Streamer::~Streamer() {
     for (auto & thread: audio_ports) {

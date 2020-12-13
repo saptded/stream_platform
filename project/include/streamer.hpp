@@ -40,12 +40,12 @@ struct Client {
 namespace sp {
 class Streamer {
  public:
-    Streamer();
+    Streamer(std::string nick);
     ~Streamer();
     void getting_users();
     void get_camera_settings();
     void start_video_stream();
-    void create_link();
+    std::string create_link();
 
  private:
     int port = 8081;

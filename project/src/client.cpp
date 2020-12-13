@@ -14,14 +14,7 @@
 #include <QImage>
 
 namespace sp {
-Client::Client() {
-    //    std::cout << "nickname: ";
-    //    std::cin >> nickname;
-    //    std::cout << "server_ip: ";
-    //    std::cin >> server_ip;
-    //    std::cout << "server_port: ";
-    //    std::cin >> server_port;
-}
+Client::Client(std::string nick) : nickname(std::move(nick)) {}
 
 void Client::connect_to_server() {
     int sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -158,11 +151,7 @@ void Client::audio_recieve() {
     g_main_loop_unref (loop);
     g_free(descr);
 }
-void Client::get_link() {
-    std::string data;
-
-    std::cout << "enter link: ";
-    std::cin >> data;
+void Client::get_link(std::string data) {
     std::string dec;
     int i = 0;
 
@@ -221,10 +210,8 @@ void Client::get_link() {
         port.push_back(d);
     }
     server_port = stoi(port);
-
-
-
 }
+
 int Client::get_server_port() {
     return server_port;
 }
