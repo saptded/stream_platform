@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <client.hpp>
 #include <streamer.hpp>
+#include <client_window.h>
 
 second_window::second_window(QWidget *parent) : QMainWindow(parent), ui(new Ui::second_window) {
     _parent = parent;
@@ -32,6 +33,10 @@ void second_window::on_create_button_clicked() {
     connect(back, &QPushButton::clicked, this, &second_window::back_button);
     back->setFont(my_font);
 
+    next = new QPushButton("Next");
+    connect(next, &QPushButton::clicked, this, &second_window::next_button);
+    next->setFont(my_font);
+
     role = new QLabel("HOST", this);
     role->setFont(my_font2);
 
@@ -55,13 +60,15 @@ void second_window::on_create_button_clicked() {
     ui->label_lay->addWidget(role);
     ui->show_extra_settings_lay->addWidget(extra_set);
     ui->main_buttons_lay->addWidget(back);
+    ui->main_buttons_lay->addWidget(next);
 }
 
 void second_window::on_join_button_clicked() {
     role_id = 2;
 
     ui->data_widget->show();
-    sp::Client client(_nick.toStdString());
+    _client = sp::Client(_nick.toStdString());
+//    sp::Client client(_nick.toStdString());
 
     QFont my_font("Ubuntu Mono", 14);
     my_font.setItalic(true);
@@ -72,6 +79,10 @@ void second_window::on_join_button_clicked() {
     connect(back, &QPushButton::clicked, this, &second_window::back_button);
     back->setFont(my_font);
 
+    next = new QPushButton("Next");
+    connect(next, &QPushButton::clicked, this, &second_window::next_button);
+    next->setFont(my_font);
+
     role = new QLabel("CLIENT", this);
     role->setFont(my_font2);
 
@@ -80,6 +91,9 @@ void second_window::on_join_button_clicked() {
 
     data = new QLineEdit();
     data->setFont(my_font);
+    entered_link = data->text();
+//    _client.get_link(l);
+
 
     data->setAlignment(Qt::AlignCenter);
     link_to_conf->setAlignment(Qt::AlignCenter);
@@ -91,6 +105,9 @@ void second_window::on_join_button_clicked() {
     ui->link_lay->addWidget(data);
     ui->label_lay->addWidget(role);
     ui->main_buttons_lay->addWidget(back);
+    ui->main_buttons_lay->addWidget(next);
+
+//    _client = client;
 }
 
 void second_window::set_nick(QString &nick) { _nick = std::move(nick); }
@@ -99,6 +116,7 @@ void second_window::back_button() {
     ui->role_buttons_widget->show();
     ui->data_widget->hide();
     delete back;
+    delete next;
     delete data;
     delete link_to_conf;
     delete role;
@@ -147,5 +165,16 @@ void second_window::settings_button() {
     }else if (settings_status == 2) {
         ui->settings_widget->show();
         settings_status = 1;
+    }
+}
+
+void second_window::next_button() {
+    if (role_id == 2) {
+        entered_link = data->text();
+
+        _client.get_link(entered_link.toStdString());
+        QMainWindow *client_win = new client_window(_client);
+        client_win->show();
+        this->hide();
     }
 }

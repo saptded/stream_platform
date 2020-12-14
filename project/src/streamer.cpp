@@ -270,6 +270,8 @@ std::string Streamer::create_link() {
 
     enc += "/hosthorn:" + streamer_nickname;
 
+    std::cout << enc;
+
     return enc;
 }
 Streamer::~Streamer() {

@@ -1,6 +1,8 @@
 #include "client.hpp"
 
+#include <QImage>
 #include <QThread>
+#include <QWidget>
 #include <arpa/inet.h>
 #include <cstring>
 #include <iostream>
@@ -10,11 +12,22 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-#include <QImage>
+#include <QLabel>
+#include <QMainWindow>
 
 namespace sp {
 Client::Client(std::string nick) : nickname(std::move(nick)) {}
+
+Client::Client(const sp::Client &client)
+    : nickname(client.nickname), server_port(client.server_port), server_ip(client.server_ip) {}
+
+Client &Client::operator=(const Client &client) {
+    nickname = client.nickname;
+    server_port = client.server_port;
+    server_ip = client.server_ip;
+
+    return *this;
+}
 
 void Client::connect_to_server() {
     int sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -53,7 +66,7 @@ void Client::connect_to_server() {
     close(sock);
 }
 
-//class WORKER : public QThread {
+// class WORKER : public QThread {
 // public:
 //    WORKER(Client &client) : _client(client) {}
 //
@@ -66,42 +79,44 @@ void Client::connect_to_server() {
 
 void Client::start_watch() {
     //    QThread video(&Client::video_recieve, this);
-    std::thread video(&Client::video_recieve, this);
-        std::thread audio(&Client::audio_recieve, this);
-//    WORKER worker{*this};
-//    worker.start();
-//        video_recieve();
-        audio.join();
-    video.join();
-//    worker.wait();
+//    std::thread video(&Client::video_recieve, this);
+//    std::thread audio(&Client::audio_recieve, this);
+//    //    WORKER worker{*this};
+//    //    worker.start();
+//    //        video_recieve();
+//    audio.join();
+//    video.join();
+    //    worker.wait();
 }
 
-void Client::video_recieve() {
-    cv::VideoCapture cap("udpsrc port=" + std::to_string(server_port) +
-                             " "
-                             "! application/x-rtp, payload = 26, clock-rate=90000, encoding-name=JPEG "
-                             "! rtpjpegdepay "
-                             "! jpegdec "
-                             "! videoconvert "
-                             "! appsink",
-                         cv::CAP_GSTREAMER);
+void Client::cap_act() {
+    cap = cv::VideoCapture("udpsrc port=" + std::to_string(server_port) +
+                               " "
+                               "! application/x-rtp, payload = 26, clock-rate=90000, encoding-name=JPEG "
+                               "! rtpjpegdepay "
+                               "! jpegdec "
+                               "! videoconvert "
+                               "! appsink",
+                           cv::CAP_GSTREAMER);
 
     if (!cap.isOpened()) {
         throw "no signal";
     }
+}
 
-    cv::Mat frame;
+void Client::video_recieve(QLabel *label) {
+    cap >> frame;
 
-    while (true) {
-        cap >> frame;
-//        QImage q_image{};
+        label->setFixedHeight(720);
+        label->setFixedWidth(1280);
 
-        imshow("cap", frame);
+//        frame.reshape();
 
-//        if (cv::waitKey(1) == 27) {
-//            break;
-//        }
-    }
+        cv::resize(frame, frame, cv::Size(1280, 720));
+
+        cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
+
+        label->setPixmap(QPixmap::fromImage(QImage(frame.data, frame.cols, frame.rows, frame.step, QImage::Format_RGB888)));
 }
 void Client::audio_recieve() {
     gst_init(nullptr, nullptr);
@@ -133,10 +148,10 @@ void Client::audio_recieve() {
 
     if (error) {
         g_print("could not construct pipeline: %s\n", error->message);
-        gst_element_set_state (pipeline, GST_STATE_NULL);
-        gst_object_unref (pipeline);
+        gst_element_set_state(pipeline, GST_STATE_NULL);
+        gst_object_unref(pipeline);
         g_clear_error(&error);
-        g_main_loop_unref (loop);
+        g_main_loop_unref(loop);
         g_free(descr);
         throw "pipeline error";
     }
@@ -145,10 +160,10 @@ void Client::audio_recieve() {
 
     g_main_loop_run(loop);
 
-    gst_element_set_state (pipeline, GST_STATE_NULL);
-    gst_object_unref (pipeline);
+    gst_element_set_state(pipeline, GST_STATE_NULL);
+    gst_object_unref(pipeline);
     g_clear_error(&error);
-    g_main_loop_unref (loop);
+    g_main_loop_unref(loop);
     g_free(descr);
 }
 void Client::get_link(std::string data) {
@@ -212,8 +227,6 @@ void Client::get_link(std::string data) {
     server_port = stoi(port);
 }
 
-int Client::get_server_port() {
-    return server_port;
-}
+int Client::get_server_port() { return server_port; }
 
 }  // namespace sp

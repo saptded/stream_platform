@@ -48,12 +48,14 @@ void MainWindow::on_confirm_button_clicked() {
         ui->error_lay->addWidget(error);
     }
     if (!user_name.isEmpty()) {
+        if (!ui->error_lay->isEmpty()) {
+            delete error;
+        }
         second_window *w = new second_window(this);
         w->set_nick(user_name);
         w->show();
-        delete error;
-        ui->enter_name_line->clear();
         this->hide();
+        ui->enter_name_line->clear();
     }
 }
 
@@ -63,12 +65,14 @@ void MainWindow::on_enter_name_line_returnPressed() {
         ui->error_lay->addWidget(error);
     }
     if (!user_name.isEmpty()) {
+        if (!ui->error_lay->isEmpty()) {
+            delete error;
+        }
         second_window *w = new second_window(this);
         w->set_nick(user_name);
         w->show();
-        delete error;
-        ui->enter_name_line->clear();
         this->hide();
+        ui->enter_name_line->clear();
     }
 }
 

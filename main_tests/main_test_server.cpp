@@ -5,7 +5,7 @@
 
 
 int main() {
-    sp::Streamer streamer;
+    sp::Streamer streamer("aaaa");
 
     streamer.create_link();
 

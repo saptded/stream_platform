@@ -5,6 +5,8 @@
 #include <QLineEdit>
 #include <QMainWindow>
 #include <QPushButton>
+#include <client.hpp>
+#include <streamer.hpp>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -25,16 +27,19 @@ class second_window : public QMainWindow {
     void on_join_button_clicked();
     void on_return_button_clicked();
     void back_button();
+    void next_button();
     void settings_button();
 
  private:
     int role_id = 0;
+
     int settings_status = 0;
+
     QWidget *_parent;
     Ui::second_window *ui;
-    QString _nick;
     QPushButton *back;
     QPushButton *extra_set;
+    QPushButton *next;
     QLineEdit *data;
     QLineEdit *max_clients;
     QLineEdit *camera_index;
@@ -42,5 +47,10 @@ class second_window : public QMainWindow {
     QLabel *role;
     QLabel *m_cl;
     QLabel *c_i;
+    QString entered_link;
+
+    sp::Client _client;
+//    sp::Streamer _streamer;
+    QString _nick;
 };
 #endif  // SECOND_WINDOW_H

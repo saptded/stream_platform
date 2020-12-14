@@ -41,12 +41,19 @@ add_executable(main_qt
         main_qt.cpp
         main_window/mainwindow.cpp
         main_window/mainwindow.ui
-        second_window/second_window.cpp
-        second_window/second_window.ui
+        role_settings_window/second_window.cpp
+        role_settings_window/second_window.ui
+        client_window/client_window.cpp
+        client_window/client_window.ui
+        video_reciever/video_receiver.cpp
+        my_qthread/my_qthread.cpp
         )
 target_include_directories(main_qt PUBLIC
         main_window
-        second_window
+        role_settings_window
+        client_window
+        video_reciever
+        my_qthread
         )
 
 target_link_libraries(main_qt streamer client)
