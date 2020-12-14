@@ -92,8 +92,6 @@ void second_window::on_join_button_clicked() {
     data = new QLineEdit();
     data->setFont(my_font);
     entered_link = data->text();
-//    _client.get_link(l);
-
 
     data->setAlignment(Qt::AlignCenter);
     link_to_conf->setAlignment(Qt::AlignCenter);
@@ -106,8 +104,6 @@ void second_window::on_join_button_clicked() {
     ui->label_lay->addWidget(role);
     ui->main_buttons_lay->addWidget(back);
     ui->main_buttons_lay->addWidget(next);
-
-//    _client = client;
 }
 
 void second_window::set_nick(QString &nick) { _nick = std::move(nick); }
@@ -173,7 +169,7 @@ void second_window::next_button() {
         entered_link = data->text();
 
         _client.get_link(entered_link.toStdString());
-        QMainWindow *client_win = new client_window(_client);
+        QMainWindow *client_win = new client_window(_client, this);
         client_win->show();
         this->hide();
     }

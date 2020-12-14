@@ -121,7 +121,7 @@ void Client::video_recieve(QLabel *label) {
 void Client::audio_recieve() {
     gst_init(nullptr, nullptr);
 
-    GMainLoop *loop = g_main_loop_new(nullptr, false);
+    loop = g_main_loop_new(nullptr, false);
 
     std::string prt = std::to_string(server_port + 1);
     char *c_port = const_cast<char *>(prt.c_str());
@@ -166,6 +166,12 @@ void Client::audio_recieve() {
     g_main_loop_unref(loop);
     g_free(descr);
 }
+
+void Client::stop_gst_audio_loop() {
+    g_main_loop_quit(loop);
+    g_main_loop_unref(loop);
+}
+
 void Client::get_link(std::string data) {
     std::string dec;
     int i = 0;

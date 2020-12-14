@@ -25,7 +25,9 @@ class Client {
     void video_recieve(QLabel *label);
     void cap_act();
     int get_server_port();
+    void stop_gst_audio_loop();
 
+    GMainLoop *loop;
     void audio_recieve();
     int server_port;
     std::string server_ip;

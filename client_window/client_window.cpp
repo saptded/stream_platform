@@ -10,7 +10,12 @@ client_window::client_window(sp::Client &client, QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->label = new VideoReceiver{_client, this};
+    connect(ui->disconnect_button, &QPushButton::clicked, this, &client_window::disconnect_button);
+
+    _parent = parent;
+
+    ui->video_label = new VideoReceiver{_client, this};
+    ui->video_label->setGeometry(100, 50, 1280, 720);
 
     audio = new AudioQThread(_client);
 
@@ -20,6 +25,14 @@ client_window::client_window(sp::Client &client, QWidget *parent)
 
 client_window::~client_window()
 {
-    delete ui;
     audio->wait();
+    delete ui;
 }
+
+void client_window::disconnect_button() {
+    audio->stop_gst_audio_loop();
+//    delete audio;
+    _parent->show();
+    delete this;
+}
+

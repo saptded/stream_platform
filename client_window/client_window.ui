@@ -20,11 +20,11 @@
    <string>client_window</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="label">
+   <widget class="QLabel" name="video_label">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>30</y>
+      <x>100</x>
+      <y>50</y>
       <width>1280</width>
       <height>720</height>
      </rect>
@@ -39,24 +39,44 @@
      <string/>
     </property>
    </widget>
-   <widget class="QListView" name="listView">
+   <widget class="QListView" name="connected_users_listview">
     <property name="geometry">
      <rect>
-      <x>1360</x>
-      <y>20</y>
-      <width>510</width>
-      <height>980</height>
+      <x>1399</x>
+      <y>50</y>
+      <width>440</width>
+      <height>860</height>
      </rect>
     </property>
    </widget>
-   <widget class="QListView" name="listView_2">
+   <widget class="QListView" name="chat_listbiew">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>780</y>
+      <x>100</x>
+      <y>790</y>
       <width>1280</width>
-      <height>220</height>
+      <height>190</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="disconnect_button">
+    <property name="geometry">
+     <rect>
+      <x>1399</x>
+      <y>920</y>
+      <width>440</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Ubuntu Mono</family>
+      <pointsize>20</pointsize>
+      <italic>true</italic>
+     </font>
+    </property>
+    <property name="text">
+     <string>disconnect</string>
     </property>
    </widget>
   </widget>

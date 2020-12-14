@@ -16,12 +16,13 @@ class client_window : public QMainWindow
 
 public:
     explicit client_window(sp::Client &client, QWidget *parent = nullptr);
+    void disconnect_button();
     ~client_window();
 
 private:
     Ui::client_window *ui;
     sp::Client _client;
     AudioQThread *audio;
-
+    QWidget *_parent;
 };
 #endif // CLIENT_WINDOW_H

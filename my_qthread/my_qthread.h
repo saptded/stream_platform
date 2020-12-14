@@ -12,6 +12,7 @@ class AudioQThread : public QThread {
  public:
     explicit AudioQThread(sp::Client &client);
     void run();
+    void stop_gst_audio_loop();
  private:
     sp::Client _client;
 };
