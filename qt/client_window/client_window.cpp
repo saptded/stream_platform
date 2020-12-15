@@ -20,7 +20,6 @@ client_window::client_window(sp::Client &client, QWidget *parent)
     audio = new AudioQThread(_client);
 
     audio->start();
-
 }
 
 client_window::~client_window()

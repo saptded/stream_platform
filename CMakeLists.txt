@@ -39,21 +39,21 @@ target_link_libraries(main_test_client streamer client)
 
 add_executable(main_qt
         main_qt.cpp
-        main_window/mainwindow.cpp
-        main_window/mainwindow.ui
-        role_settings_window/second_window.cpp
-        role_settings_window/second_window.ui
-        client_window/client_window.cpp
-        client_window/client_window.ui
-        video_reciever/video_receiver.cpp
-        my_qthread/my_qthread.cpp
+        qt/main_window/mainwindow.cpp
+        qt/main_window/mainwindow.ui
+        qt/role_settings_window/second_window.cpp
+        qt/role_settings_window/second_window.ui
+        qt/client_window/client_window.cpp
+        qt/client_window/client_window.ui
+        qt/video_reciever/video_receiver.cpp
+        qt/my_qthread/my_qthread.cpp
         )
 target_include_directories(main_qt PUBLIC
-        main_window
-        role_settings_window
-        client_window
-        video_reciever
-        my_qthread
+        qt/main_window
+        qt/role_settings_window
+        qt/client_window
+        qt/video_reciever
+        qt/my_qthread
         )
 
 target_link_libraries(main_qt streamer client)
