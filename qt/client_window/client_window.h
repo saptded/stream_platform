@@ -15,7 +15,7 @@ class client_window : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit client_window(sp::Client &client, QWidget *parent = nullptr);
+    explicit client_window(sp::Client& client, QWidget *parent = nullptr);
     void disconnect_button();
     ~client_window();
 

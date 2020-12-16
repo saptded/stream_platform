@@ -35,6 +35,8 @@ class second_window : public QMainWindow {
 
     int settings_status = 0;
 
+    int error_lay_status = 0;
+
     QWidget *_parent;
     Ui::second_window *ui;
     QPushButton *back;
@@ -47,6 +49,8 @@ class second_window : public QMainWindow {
     QLabel *role;
     QLabel *m_cl;
     QLabel *c_i;
+    QLabel *connect_error;
+    QLabel *invalid_link;
     QString entered_link;
 
     sp::Client _client;

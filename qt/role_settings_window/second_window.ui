@@ -113,6 +113,17 @@
       <layout class="QHBoxLayout" name="camera_index_lay"/>
      </widget>
     </widget>
+    <widget class="QWidget" name="horizontalLayoutWidget_9">
+     <property name="geometry">
+      <rect>
+       <x>400</x>
+       <y>260</y>
+       <width>341</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="errors_lay"/>
+    </widget>
    </widget>
    <widget class="QWidget" name="role_buttons_widget" native="true">
     <property name="geometry">

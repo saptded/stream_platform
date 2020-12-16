@@ -14,6 +14,8 @@
 #include <unistd.h>
 #include <QLabel>
 #include <QMainWindow>
+#include "base_exception.h"
+
 
 namespace sp {
 Client::Client(std::string nick) : nickname(std::move(nick)) {}
@@ -45,7 +47,7 @@ void Client::connect_to_server() {
 
     int connect_res = connect(sock, (sockaddr *)&hint, sizeof(hint));
     if (connect_res == -1) {
-        throw "connect error";
+        throw BaseException("connect error");
     }
 
     char buf[4096];
@@ -77,7 +79,7 @@ void Client::connect_to_server() {
 //    Client &_client;
 //};
 
-void Client::start_watch() {
+//void Client::start_watch() {
     //    QThread video(&Client::video_recieve, this);
 //    std::thread video(&Client::video_recieve, this);
 //    std::thread audio(&Client::audio_recieve, this);
@@ -87,7 +89,7 @@ void Client::start_watch() {
 //    audio.join();
 //    video.join();
     //    worker.wait();
-}
+//}
 
 void Client::cap_act() {
     cap = cv::VideoCapture("udpsrc port=" + std::to_string(server_port) +
@@ -109,8 +111,6 @@ void Client::video_recieve(QLabel *label) {
 
         label->setFixedHeight(720);
         label->setFixedWidth(1280);
-
-//        frame.reshape();
 
         cv::resize(frame, frame, cv::Size(1280, 720));
 
@@ -173,6 +173,9 @@ void Client::stop_gst_audio_loop() {
 }
 
 void Client::get_link(std::string data) {
+    this->server_port = 0;
+    this->server_ip.clear();
+
     std::string dec;
     int i = 0;
 
@@ -228,9 +231,14 @@ void Client::get_link(std::string data) {
         }
     }
     for (auto d : dec) {
-        port.push_back(d);
+        if (isdigit(d)) {
+            port.push_back(d);
+        }
     }
-    server_port = stoi(port);
+
+    if (!port.empty()) {
+        server_port = stoi(port);
+    }
 }
 
 int Client::get_server_port() { return server_port; }

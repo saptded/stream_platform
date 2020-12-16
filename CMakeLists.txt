@@ -47,6 +47,7 @@ add_executable(main_qt
         qt/client_window/client_window.ui
         qt/video_reciever/video_receiver.cpp
         qt/my_qthread/my_qthread.cpp
+        project/src/base_exception.cpp
         )
 target_include_directories(main_qt PUBLIC
         qt/main_window

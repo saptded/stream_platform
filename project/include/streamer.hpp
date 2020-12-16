@@ -53,15 +53,6 @@ class Streamer {
     std::string streamer_nickname;
     int max_clients_amount = 10;
     std::vector<Data_client> clients;
-//    std::map<std::string, Client> clients;
-    /*
-     * clients[ip] = Client{
-     *      nick
-     *      std::thread{&Stramer... ip}
-     * };
-     *
-     *
-     */
     std::vector<cv::VideoWriter> video_ports;
     std::vector<std::thread> audio_ports;
     void video_send();

@@ -4,7 +4,7 @@
 #include "./ui_client_window.h"
 #include "video_receiver.h"
 
-client_window::client_window(sp::Client &client, QWidget *parent)
+client_window::client_window(sp::Client& client, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::client_window), _client(client)
 {
@@ -30,7 +30,7 @@ client_window::~client_window()
 
 void client_window::disconnect_button() {
     audio->stop_gst_audio_loop();
-//    delete audio;
+    audio->exit(0);
     _parent->show();
     delete this;
 }

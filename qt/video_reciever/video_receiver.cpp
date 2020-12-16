@@ -8,6 +8,7 @@ using namespace std::chrono_literals;
 
 #include "client.hpp"
 #include "video_receiver.h"
+#include <base_exception.h>
 #include "my_qthread.h"
 
 VideoReceiver::VideoReceiver(sp::Client &client, QWidget *parent) : QLabel(parent), _client(client){
@@ -15,12 +16,18 @@ VideoReceiver::VideoReceiver(sp::Client &client, QWidget *parent) : QLabel(paren
     connect(&_timer, &QTimer::timeout, this, &VideoReceiver::update_image);
     _timer.start(5ms);
 
+    _parent = parent;
+
+//    try {
+//        _client.connect_to_server();
+//    }
+//    catch (BaseException &err) {
+//        delete _parent;
+//    }
+
     _client.connect_to_server();
 
     _client.cap_act();
-
-
-//    _client.audio_recieve();
 }
 
 void VideoReceiver::update_image() {

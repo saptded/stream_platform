@@ -24,6 +24,7 @@ class VideoReceiver : public QLabel {
     cv::VideoCapture cap;
     cv::Mat frame;
     sp::Client _client;
+    QWidget *_parent;
 };
 
 #endif //QT_TEST__VIDEO_RECIEVER_H_

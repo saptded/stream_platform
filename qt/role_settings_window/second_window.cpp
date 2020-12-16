@@ -4,9 +4,10 @@
 
 #include <QLineEdit>
 #include <QWidget>
+#include <base_exception.h>
 #include <client.hpp>
-#include <streamer.hpp>
 #include <client_window.h>
+#include <streamer.hpp>
 
 second_window::second_window(QWidget *parent) : QMainWindow(parent), ui(new Ui::second_window) {
     _parent = parent;
@@ -68,7 +69,6 @@ void second_window::on_join_button_clicked() {
 
     ui->data_widget->show();
     _client = sp::Client(_nick.toStdString());
-//    sp::Client client(_nick.toStdString());
 
     QFont my_font("Ubuntu Mono", 14);
     my_font.setItalic(true);
@@ -118,12 +118,20 @@ void second_window::back_button() {
     delete role;
     if (role_id == 1) {
         delete extra_set;
-        if (settings_status == 1 || settings_status == 2){
+        if (settings_status == 1 || settings_status == 2) {
             delete m_cl;
             delete max_clients;
             delete c_i;
             delete camera_index;
             settings_status = 0;
+        }
+    }
+    if (role_id == 2) {
+        if (error_lay_status == 2) {
+            delete invalid_link;
+        }
+        if (error_lay_status == 3) {
+            delete connect_error;
         }
     }
     role_id = 0;
@@ -158,19 +166,61 @@ void second_window::settings_button() {
     } else if (settings_status == 1) {
         ui->settings_widget->hide();
         settings_status = 2;
-    }else if (settings_status == 2) {
+    } else if (settings_status == 2) {
         ui->settings_widget->show();
         settings_status = 1;
     }
 }
 
 void second_window::next_button() {
-    if (role_id == 2) {
-        entered_link = data->text();
+    QFont my_font("Ubuntu Mono", 14);
+    my_font.setItalic(true);
 
-        _client.get_link(entered_link.toStdString());
-        QMainWindow *client_win = new client_window(_client, this);
-        client_win->show();
-        this->hide();
+    if (role_id == 2) {
+        try {
+            entered_link = data->text();
+
+            std::string tmp = entered_link.toStdString();
+
+            if (tmp[0] == '.') {
+                _client.get_link(tmp);
+                QMainWindow *client_win = new client_window(_client, this);
+                client_win->show();
+                this->hide();
+            } else {
+                if (error_lay_status == 3) {
+                    delete connect_error;
+                    invalid_link = new QLabel("invalid link");
+                    invalid_link->setFont(my_font);
+                    invalid_link->setAlignment(Qt::AlignRight);
+                    ui->errors_lay->addWidget(invalid_link);
+                    error_lay_status = 2;
+                }
+                if (error_lay_status == 0) {
+                    invalid_link = new QLabel("invalid link");
+                    invalid_link->setFont(my_font);
+                    invalid_link->setAlignment(Qt::AlignRight);
+                    ui->errors_lay->addWidget(invalid_link);
+                    error_lay_status = 2;
+                }
+            }
+
+        } catch (BaseException &err) {
+            if (error_lay_status == 2) {
+                delete invalid_link;
+                connect_error = new QLabel("connect error");
+                connect_error->setFont(my_font);
+                connect_error->setAlignment(Qt::AlignRight);
+                ui->errors_lay->addWidget(connect_error);
+                error_lay_status = 3;
+            }
+            if (error_lay_status == 0) {
+                connect_error = new QLabel("connect error");
+                connect_error->setFont(my_font);
+                connect_error->setAlignment(Qt::AlignRight);
+                ui->errors_lay->addWidget(connect_error);
+                error_lay_status = 3;
+            }
+        }
     }
 }

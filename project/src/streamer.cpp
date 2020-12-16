@@ -220,6 +220,10 @@ std::string Streamer::get_local_ip() {
         }
     }
 
+    if (local_ip.empty()) {
+        local_ip = "127.0.0.1";
+    }
+
     return local_ip;
 }
 
