@@ -138,18 +138,6 @@ class personInRoom: public participant,
     }
 
     void onMessage(std::array<char, MAX_IP_PACK_SIZE>& msg) {
-//        std::vector<char> v;
-//        for (auto it: msg._M_elems) {
-//            v.push_back(it);
-//            if(it == '\0') {
-//                v.push_back('\r');
-//                v.push_back('\n');
-//                break;
-//            }
-//        }
-//        std::string message(v.begin(), v.end());
-//        std::cout << message;
-
         bool write_in_progress = !write_msgs_.empty();
 
         write_msgs_.push_back(msg);
@@ -244,13 +232,8 @@ class server {
 
 //----------------------------------------------------------------------
 
-int main(int argc, char* argv[]) {
+int main() {
     try {
-        if (argc < 2) {
-            std::cerr << "Usage: chat_server <port> [<port> ...]\n";
-            return 1;
-        }
-
         std::shared_ptr<boost::asio::io_service> io_service(new boost::asio::io_service);
         boost::shared_ptr<boost::asio::io_service::work> work(new boost::asio::io_service::work(*io_service));
         boost::shared_ptr<boost::asio::io_service::strand> strand(new boost::asio::io_service::strand(*io_service));
@@ -258,11 +241,11 @@ int main(int argc, char* argv[]) {
         std::cout << "[" << std::this_thread::get_id() << "]" << "server starts" << std::endl;
 
         std::list < std::shared_ptr < server >> servers;
-        for (int i = 1; i < argc; ++i) {
-            tcp::endpoint endpoint(tcp::v4(), std::atoi(argv[i]));
-            std::shared_ptr<server> a_server(new server(*io_service, *strand, endpoint));
-            servers.push_back(a_server);
-        }
+
+        tcp::endpoint endpoint(tcp::v4(), std::atoi("8080"));
+        std::shared_ptr<server> a_server(new server(*io_service, *strand, endpoint));
+        servers.push_back(a_server);
+
 
         boost::thread_group workers;
         for (int i = 0; i < 1; ++i) {

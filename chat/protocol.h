@@ -4,8 +4,7 @@
 enum : unsigned
 {
     MAX_IP_PACK_SIZE = 512,
-    MAX_NICKNAME = 16,
-    PADDING = 24
+    MAX_NICKNAME = 16
 };
 
 #endif //STREAM_PLATFORM_PROTOCOL_H
