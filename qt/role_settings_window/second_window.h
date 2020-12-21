@@ -38,6 +38,8 @@ class second_window : public QMainWindow {
 
     int error_lay_status = 0;
 
+    int port_status = 0;
+
     QWidget *_parent;
     Ui::second_window *ui;
     QPushButton *back;

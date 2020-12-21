@@ -23,8 +23,8 @@ streamer_window::streamer_window(sp::Streamer& streamer, QWidget *parent)
 //    getting_usrs.detach();
 //    streaming.detach();
 
-//    ui->video_label = new VideoReceiver(host_video, this);
-//    ui->video_label->setGeometry(100, 50, 1280, 720);
+    ui->video_label = new VideoReceiver(host_video, this);
+    ui->video_label->setGeometry(100, 50, 1280, 720);
 
     connect(ui->disconnect_button, &QPushButton::clicked, this, &streamer_window::disconnect_button);
 }
@@ -39,9 +39,8 @@ streamer_window::~streamer_window()
 void streamer_window::disconnect_button() {
     _streamer.stop_run();
     _streamer.stop_audio();
-    this->hide();
-    delete ui->video_label;
-    parentWidget()->show();
+    _parent->show();
+    delete this;
 
 }
 

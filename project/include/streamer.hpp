@@ -44,6 +44,7 @@ class Streamer {
     Streamer(std::string nick = "master");
     ~Streamer();
     Streamer(const sp::Streamer &streamer);
+    Streamer &operator=(const Streamer& streamer);
     void getting_users();
     void get_camera_settings();
     void start_video_stream();
@@ -57,9 +58,10 @@ class Streamer {
 
 
  private:
+    std::string local_ip;
     bool run = true;
     int cam_index = 0;
-    int port = 8080;
+    int port = 8081;
     Stgs settings;
     std::string streamer_nickname;
     int max_clients_amount = 10;
@@ -70,7 +72,7 @@ class Streamer {
     int loops_amount = 0;
     void video_send();
     void audio_send();
-    std::string get_local_ip();
+    void get_local_ip();
     void create_audio_port(const std::string& client_ip, GMainLoop *loop);
     void create_video_port(const std::string& client_ip);
 };

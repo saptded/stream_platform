@@ -32,6 +32,6 @@ void client_window::disconnect_button() {
     audio->stop_gst_audio_loop();
     audio->exit(0);
     _parent->show();
-//    delete this;
+    delete this;
 }
 

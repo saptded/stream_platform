@@ -96,9 +96,15 @@ void Streamer::getting_users() {
     hint.sin_port = htons(port);
     inet_pton(AF_INET, "0.0.0.0", &hint.sin_addr);
 
-    if (bind(tcp_socket, (sockaddr *)&hint, sizeof(hint)) == -1) {
-        throw BaseException("bind error");
+    try {
+        if (bind(tcp_socket, (sockaddr *)&hint, sizeof(hint)) == -1) {
+            throw BaseException("bind error");
+        }
+    } catch (BaseException &err) {
+        getting_users();
+        this->change_port();
     }
+
 
     listen(tcp_socket, SOMAXCONN);
 
@@ -131,7 +137,7 @@ void Streamer::getting_users() {
                 ips.insert(inet_ntoa(client_sock.sin_addr));
 
                 if (client.client_nickname == "host") {
-                    std::cout << "stream is started!" << std::endl;
+//                    std::cout << "stream is started!" << std::endl;
                 } else {
                     std::cout << client.client_nickname << " connected" << std::endl;
                 }
@@ -204,10 +210,9 @@ void Streamer::audio_send() {
     }
 }
 
-std::string Streamer::get_local_ip() {
+void Streamer::get_local_ip() {
     QList<QHostAddress> list = QNetworkInterface::allAddresses();
     QString str;
-    std::string local_ip;
 
     for (int nIter = 0; nIter < list.count(); nIter++) {
         if (!list[nIter].isLoopback())
@@ -223,11 +228,10 @@ std::string Streamer::get_local_ip() {
         local_ip = "127.0.0.1";
     }
 
-    return local_ip;
 }
 
 std::string Streamer::create_link() {
-    std::string local_ip = get_local_ip();
+    get_local_ip();
     std::string enc;
     std::string data = local_ip + " " + std::to_string(port);
 
@@ -273,6 +277,8 @@ std::string Streamer::create_link() {
 
     enc += "/hosthorn:" + streamer_nickname;
 
+    std::cout << enc << std::endl;
+
     return enc;
 }
 Streamer::~Streamer() {
@@ -288,7 +294,11 @@ void Streamer::set_max_client_amount(int max) {
 }
 
 Streamer::Streamer(const sp::Streamer &streamer)
-    : cam_index(streamer.cam_index), max_clients_amount(streamer.max_clients_amount), streamer_nickname(streamer.streamer_nickname) {}
+    : cam_index(streamer.cam_index),
+      max_clients_amount(streamer.max_clients_amount),
+      streamer_nickname(streamer.streamer_nickname),
+      port(streamer.port), local_ip(streamer.local_ip) {}
+
 void Streamer::change_port() {
     port++;
 }
@@ -301,6 +311,15 @@ void Streamer::stop_audio() {
 }
 void Streamer::stop_run() {
     run = false;
+}
+Streamer &Streamer::operator=(const Streamer &streamer) {
+    port = streamer.port;
+    local_ip = streamer.local_ip;
+    cam_index = streamer.cam_index;
+    streamer_nickname = streamer.streamer_nickname;
+    max_clients_amount = streamer.max_clients_amount;
+
+    return *this;
 }
 
 }  // namespace sp

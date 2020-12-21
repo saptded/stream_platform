@@ -201,11 +201,11 @@ void Client::get_link(std::string data) {
 
     std::string port;
     for (auto d : dec) {
-        server_ip.push_back(d);
         if (isspace(d)) {
             dec.erase(0, dec.find(d) + 1);
             break;
         }
+        server_ip.push_back(d);
     }
     for (auto d : dec) {
         if (isdigit(d)) {

@@ -20,10 +20,17 @@ second_window::~second_window() { delete ui; }
 void second_window::on_create_button_clicked() {
     role_id = 1;
 
-    ui->data_widget->show();
-    sp::Streamer host(_nick.toStdString());
+    if (port_status == 1) {
+//        delete data;
+    }
 
-    std::string str_link = host.create_link();
+    ui->data_widget->show();
+
+    if (port_status == 0) {
+        _streamer = sp::Streamer(_nick.toStdString());
+    }
+
+    std::string str_link = _streamer.create_link();
     QString link = QString::fromUtf8(str_link.c_str());
 
     QFont my_font("Ubuntu Mono", 14);
@@ -234,13 +241,34 @@ void second_window::next_button() {
                 cam_index = camera_index->value();
                 _streamer.set_cam_index(cam_index);
             }
+            if (port_status == 1) {
+
+
+            }
+
+            port_status = 1;
+
+
 
             streamer_win = new streamer_window(_streamer, this);
             streamer_win->show();
             this->hide();
-        } catch (BaseException &err) {
-            delete streamer_win;
+
+            QFont my_font("Ubuntu Mono", 14);
+            my_font.setItalic(true);
+
             _streamer.change_port();
+//            link_to_conf->clear();
+//            data->clear();
+            delete data;
+            std::string str_link = _streamer.create_link();
+            QString link = QString::fromUtf8(str_link.c_str());
+            data = new QLineEdit(link);
+            data->setReadOnly(true);
+            data->setFont(my_font);
+            data->setAlignment(Qt::AlignCenter);
+            ui->link_lay->addWidget(data);
+        } catch (BaseException &err) {
         }
     }
 }

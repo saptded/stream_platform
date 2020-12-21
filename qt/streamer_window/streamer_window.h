@@ -3,6 +3,10 @@
 
 #include <QMainWindow>
 
+#include "base_exception.h"
+
+#include "my_qthread.h"
+
 #include <streamer.hpp>
 #include "client.hpp"
 

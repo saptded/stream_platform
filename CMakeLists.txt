@@ -31,10 +31,12 @@ target_link_libraries(client ${OpenCV_LIBS})
 target_link_libraries(client ${GST_LIBRARIES})
 target_link_libraries(client Qt5::Gui Qt5::Core Qt5::Widgets Qt5::Network)
 
-add_executable(main_test_server main_tests/main_test_server.cpp)
+add_executable(main_test_server main_tests/main_test_server.cpp
+        project/src/base_exception.cpp)
 target_link_libraries(main_test_server streamer client)
 
-add_executable(main_test_client main_tests/main_test_client.cpp)
+add_executable(main_test_client main_tests/main_test_client.cpp
+        project/src/base_exception.cpp)
 target_link_libraries(main_test_client streamer client)
 
 add_executable(main_qt
