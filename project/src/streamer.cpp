@@ -9,7 +9,7 @@ Streamer::Streamer(std::string nick) : streamer_nickname(std::move(nick)) {}
 void Streamer::create_audio_port(const std::string& client_ip) {
     gst_init(nullptr, nullptr);
 
-    GMainLoop *loop = g_main_loop_new(nullptr, false);
+    loop = g_main_loop_new(nullptr, false);
 
     std::string prt = std::to_string(port + 1);
     char *c_port = const_cast<char *>(prt.c_str());
@@ -122,13 +122,15 @@ void Streamer::getting_users() {
 
                 ips.insert(inet_ntoa(client_sock.sin_addr));
 
-                std::cout << client.client_nickname << " connected" << std::endl;
+                if (client.client_nickname == "host") {
+                    std::cout << "stream is started!" << std::endl;
+                } else {
+                    std::cout << client.client_nickname << " connected" << std::endl;
+                }
 
                 clients.push_back(client);
 
                 create_video_port(client.ip);
-
-//                audio_ports.emplace_back(&Streamer::create_audio_port, this, client.ip);
 
                 send(clientSocket, "connected", 10, 0);
 
@@ -145,18 +147,13 @@ void Streamer::getting_users() {
 }
 
 void Streamer::get_camera_settings() {
-    cv::VideoCapture cap(0);
+    cv::VideoCapture cap(cam_index);
     settings.width = static_cast<int>(cap.get(cv::CAP_PROP_FRAME_WIDTH));
     settings.height = static_cast<int>(cap.get(cv::CAP_PROP_FRAME_HEIGHT));
     settings.fps = cap.get(cv::CAP_PROP_FPS);
 }
 
 void Streamer::start_video_stream() {
-//    auto it = clients.begin();
-//    for (auto &[ip, client]: clients) {
-//
-//    }
-
     std::thread video(&Streamer::video_send, this);
     std::thread audio(&Streamer::audio_send, this);
 
@@ -166,7 +163,7 @@ void Streamer::start_video_stream() {
 }
 
 void Streamer::video_send() {
-    cv::VideoCapture cap(0);
+    cv::VideoCapture cap(cam_index);
     cv::Mat frame;
 
     if (!cap.isOpened()) {
@@ -179,25 +176,12 @@ void Streamer::video_send() {
         for (auto video_port : video_ports) {
             video_port << frame;
         }
-
-        //        std::cout << video_ports.size();
-
-        //        if (cv::waitKey(1) == 27) {
-        //            break;
-        //        }
     }
 }
 
 void Streamer::audio_send() {
-//    std::set<std::string> used_ip;
     int size = clients.size();
     while (true) {
-//        for (auto & client : clients) {
-//            if (used_ip.count(client.ip) == 0) {
-//                audio_ports.emplace_back(&Streamer::create_audio_port, this, clients.back().ip);
-//                used_ip.emplace(client.ip);
-//            }
-//        }
       if (clients.size() != size) {
           audio_ports.emplace_back(&Streamer::create_audio_port, this, clients.back().ip);
           size = clients.size();
@@ -274,8 +258,6 @@ std::string Streamer::create_link() {
 
     enc += "/hosthorn:" + streamer_nickname;
 
-    std::cout << enc;
-
     return enc;
 }
 Streamer::~Streamer() {
@@ -283,5 +265,13 @@ Streamer::~Streamer() {
         thread.join();
     }
 }
+void Streamer::set_cam_index(int index) {
+    cam_index = index;
+}
+void Streamer::set_max_client_amount(int max) {
+    max_clients_amount = max;
+}
+Streamer::Streamer(const sp::Streamer &streamer)
+    : cam_index(streamer.cam_index), max_clients_amount(streamer.max_clients_amount), streamer_nickname(streamer.streamer_nickname) {}
 
 }  // namespace sp

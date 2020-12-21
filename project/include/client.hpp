@@ -16,7 +16,7 @@
 namespace sp {
 class Client {
  public:
-    explicit Client(std::string nick = "anon");
+    explicit Client(std::string nick = "slave");
     Client(const sp::Client &client);
     Client &operator=(const Client& client);
     void start_watch();

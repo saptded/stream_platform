@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <client.hpp>
 #include <streamer.hpp>
+#include <QSpinBox>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -43,8 +44,8 @@ class second_window : public QMainWindow {
     QPushButton *extra_set;
     QPushButton *next;
     QLineEdit *data;
-    QLineEdit *max_clients;
-    QLineEdit *camera_index;
+    QSpinBox *max_clients;
+    QSpinBox *camera_index;
     QLabel *link_to_conf;
     QLabel *role;
     QLabel *m_cl;
@@ -52,9 +53,11 @@ class second_window : public QMainWindow {
     QLabel *connect_error;
     QLabel *invalid_link;
     QString entered_link;
+    int max_clnts;
+    int cam_index;
 
     sp::Client _client;
-//    sp::Streamer _streamer;
+    sp::Streamer _streamer;
     QString _nick;
 };
 #endif  // SECOND_WINDOW_H

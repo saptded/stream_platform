@@ -47,17 +47,47 @@ add_executable(main_qt
         qt/client_window/client_window.ui
         qt/video_reciever/video_receiver.cpp
         qt/my_qthread/my_qthread.cpp
+        qt/streamer_window/streamer_window.cpp
+        qt/streamer_window/streamer_window.ui
         project/src/base_exception.cpp
         )
+
+add_executable(main_qt2
+        main_qt.cpp
+        qt/main_window/mainwindow.cpp
+        qt/main_window/mainwindow.ui
+        qt/role_settings_window/second_window.cpp
+        qt/role_settings_window/second_window.ui
+        qt/client_window/client_window.cpp
+        qt/client_window/client_window.ui
+        qt/video_reciever/video_receiver.cpp
+        qt/my_qthread/my_qthread.cpp
+        qt/streamer_window/streamer_window.cpp
+        qt/streamer_window/streamer_window.ui
+        project/src/base_exception.cpp
+        )
+
 target_include_directories(main_qt PUBLIC
         qt/main_window
         qt/role_settings_window
         qt/client_window
         qt/video_reciever
         qt/my_qthread
+        qt/streamer_window
         )
 
+target_include_directories(main_qt2 PUBLIC
+        qt/main_window
+        qt/role_settings_window
+        qt/client_window
+        qt/video_reciever
+        qt/my_qthread
+        qt/streamer_window
+        )
+
+
 target_link_libraries(main_qt streamer client)
+target_link_libraries(main_qt2 streamer client)
 
 
 #target_link_libraries(main_qt_client PRIVATE Qt5::Widgets Qt5::Core Qt5::Gui ${OpenCV_LIBS})

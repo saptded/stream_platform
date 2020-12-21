@@ -7,6 +7,7 @@
 #include <base_exception.h>
 #include <client.hpp>
 #include <client_window.h>
+#include <streamer_window.h>
 #include <streamer.hpp>
 
 second_window::second_window(QWidget *parent) : QMainWindow(parent), ui(new Ui::second_window) {
@@ -78,32 +79,31 @@ void second_window::on_join_button_clicked() {
     back = new QPushButton("Back");
     connect(back, &QPushButton::clicked, this, &second_window::back_button);
     back->setFont(my_font);
+    ui->main_buttons_lay->addWidget(back);
 
     next = new QPushButton("Next");
     connect(next, &QPushButton::clicked, this, &second_window::next_button);
     next->setFont(my_font);
+    ui->main_buttons_lay->addWidget(next);
 
     role = new QLabel("CLIENT", this);
     role->setFont(my_font2);
+    ui->label_lay->addWidget(role);
+    role->setAlignment(Qt::AlignCenter);
 
     link_to_conf = new QLabel("enter link to conference:", this);
     link_to_conf->setFont(my_font);
+    ui->link_lay->addWidget(link_to_conf);
+    link_to_conf->setAlignment(Qt::AlignCenter);
 
     data = new QLineEdit();
     data->setFont(my_font);
     entered_link = data->text();
-
+    ui->link_lay->addWidget(data);
     data->setAlignment(Qt::AlignCenter);
-    link_to_conf->setAlignment(Qt::AlignCenter);
-    role->setAlignment(Qt::AlignCenter);
+
 
     ui->role_buttons_widget->hide();
-
-    ui->link_lay->addWidget(link_to_conf);
-    ui->link_lay->addWidget(data);
-    ui->label_lay->addWidget(role);
-    ui->main_buttons_lay->addWidget(back);
-    ui->main_buttons_lay->addWidget(next);
 }
 
 void second_window::set_nick(QString &nick) { _nick = std::move(nick); }
@@ -149,17 +149,18 @@ void second_window::settings_button() {
 
         m_cl = new QLabel("max clients:  ", this);
         m_cl->setFont(my_font);
-        max_clients = new QLineEdit();
+        ui->max_clients_lay->addWidget(m_cl);
+
+        max_clients = new QSpinBox();
         max_clients->setFont(my_font);
+        ui->max_clients_lay->addWidget(max_clients);
 
         c_i = new QLabel("camera index: ", this);
         c_i->setFont(my_font);
-        camera_index = new QLineEdit();
-        camera_index->setFont(my_font);
-
-        ui->max_clients_lay->addWidget(m_cl);
-        ui->max_clients_lay->addWidget(max_clients);
         ui->camera_index_lay->addWidget(c_i);
+
+        camera_index = new QSpinBox();
+        camera_index->setFont(my_font);
         ui->camera_index_lay->addWidget(camera_index);
 
         settings_status = 1;
@@ -222,5 +223,18 @@ void second_window::next_button() {
                 error_lay_status = 3;
             }
         }
+    }
+    if (role_id == 1) {
+        if (settings_status == 1 || settings_status == 2) {
+            max_clnts = max_clients->value();
+            _streamer.set_max_client_amount(max_clnts);
+
+            cam_index = camera_index->value();
+            _streamer.set_cam_index(cam_index);
+        }
+
+        QMainWindow *streamer_win = new streamer_window(_streamer, this);
+        streamer_win->show();
+        this->hide();
     }
 }

@@ -40,15 +40,20 @@ struct Client {
 namespace sp {
 class Streamer {
  public:
-    Streamer(std::string nick);
+    Streamer(std::string nick = "master");
     ~Streamer();
+    Streamer(const sp::Streamer &streamer);
     void getting_users();
     void get_camera_settings();
     void start_video_stream();
     std::string create_link();
+    void set_cam_index(int index);
+    void set_max_client_amount(int max);
 
+    GMainLoop *loop;
  private:
-    int port = 8081;
+    int cam_index = 0;
+    int port = 8080;
     Stgs settings;
     std::string streamer_nickname;
     int max_clients_amount = 10;
