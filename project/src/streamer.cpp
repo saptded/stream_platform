@@ -6,10 +6,10 @@ std::mutex mtx;
 namespace sp {
 Streamer::Streamer(std::string nick) : streamer_nickname(std::move(nick)) {}
 
-void Streamer::create_audio_port(const std::string& client_ip) {
+void Streamer::create_audio_port(const std::string& client_ip, GMainLoop *loop) {
     gst_init(nullptr, nullptr);
 
-    loop = g_main_loop_new(nullptr, false);
+    //    loop = g_main_loop_new(nullptr, false);
 
     std::string prt = std::to_string(port + 1);
     char *c_port = const_cast<char *>(prt.c_str());
@@ -40,12 +40,16 @@ void Streamer::create_audio_port(const std::string& client_ip) {
 
     gst_element_set_state(GST_ELEMENT(pipeline), GST_STATE_PLAYING);
 
+    audio_loops.push_back(loop);
+
+    loops_amount++;
+
     g_main_loop_run(loop);
 
     gst_element_set_state (pipeline, GST_STATE_NULL);
     gst_object_unref (pipeline);
     g_error_free(error);
-    g_main_loop_unref (loop);
+//    g_main_loop_unref (loop);
     g_free(descr);
 }
 
@@ -82,9 +86,9 @@ void Streamer::create_video_port(const std::string &client_ip) {
 }
 
 void Streamer::getting_users() {
-    int tcp_socket = socket(AF_INET, SOCK_STREAM, 0);
+    int tcp_socket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
     if (tcp_socket == -1) {
-        throw "socket error";
+        throw BaseException("socket error");
     }
 
     sockaddr_in hint{};
@@ -93,7 +97,7 @@ void Streamer::getting_users() {
     inet_pton(AF_INET, "0.0.0.0", &hint.sin_addr);
 
     if (bind(tcp_socket, (sockaddr *)&hint, sizeof(hint)) == -1) {
-        throw "bind error";
+        throw BaseException("bind error");
     }
 
     listen(tcp_socket, SOMAXCONN);
@@ -109,12 +113,16 @@ void Streamer::getting_users() {
     while (i < max_clients_amount) {
         int clientSocket = accept(tcp_socket, (sockaddr *)&client_sock, &client_sock_size);
 
+        if (!run) {
+            break;
+        }
+
         if (clientSocket > 0) {
             buf.resize(4096);
             if (ips.count(inet_ntoa(client_sock.sin_addr)) == 0) {
                 int bytesReceived = recv(clientSocket, buf.data(), buf.size(), 0);  // buf.data(), buf.size()
                 if (bytesReceived == -1) {
-                    throw "recv error";
+                    throw BaseException("recv error");
                 }
                 buf.resize(bytesReceived);
                 client.client_nickname = std::string(buf);
@@ -167,7 +175,7 @@ void Streamer::video_send() {
     cv::Mat frame;
 
     if (!cap.isOpened()) {
-        throw "camera error";
+        throw BaseException("camera error");
     }
 
     while (true) {
@@ -176,6 +184,9 @@ void Streamer::video_send() {
         for (auto video_port : video_ports) {
             video_port << frame;
         }
+        if (!run) {
+            break;
+        }
     }
 }
 
@@ -183,8 +194,12 @@ void Streamer::audio_send() {
     int size = clients.size();
     while (true) {
       if (clients.size() != size) {
-          audio_ports.emplace_back(&Streamer::create_audio_port, this, clients.back().ip);
+          GMainLoop *lp = g_main_loop_new(nullptr, false);;
+          audio_ports.emplace_back(&Streamer::create_audio_port, this, clients.back().ip, lp);
           size = clients.size();
+      }
+      if (!run) {
+          break;
       }
     }
 }
@@ -271,7 +286,21 @@ void Streamer::set_cam_index(int index) {
 void Streamer::set_max_client_amount(int max) {
     max_clients_amount = max;
 }
+
 Streamer::Streamer(const sp::Streamer &streamer)
     : cam_index(streamer.cam_index), max_clients_amount(streamer.max_clients_amount), streamer_nickname(streamer.streamer_nickname) {}
+void Streamer::change_port() {
+    port++;
+}
+
+void Streamer::stop_audio() {
+    for (int i = 0; i < loops_amount; i++) {
+        g_main_loop_quit(audio_loops[i]);
+        g_main_loop_unref(audio_loops[i]);
+    }
+}
+void Streamer::stop_run() {
+    run = false;
+}
 
 }  // namespace sp

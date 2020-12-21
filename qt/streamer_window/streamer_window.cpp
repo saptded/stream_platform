@@ -15,13 +15,16 @@ streamer_window::streamer_window(sp::Streamer& streamer, QWidget *parent)
 
     ui->setupUi(this);
 
-    streamer.get_camera_settings();
+    _streamer.get_camera_settings();
 
-    getting_usrs = std::thread(&sp::Streamer::getting_users, &streamer);
-    streaming = std::thread(&sp::Streamer::start_video_stream, &streamer);
+    getting_usrs = std::thread(&sp::Streamer::getting_users, &_streamer);
+    streaming = std::thread(&sp::Streamer::start_video_stream, &_streamer);
 
-    ui->video_label = new VideoReceiver(host_video, this);
-    ui->video_label->setGeometry(100, 50, 1280, 720);
+//    getting_usrs.detach();
+//    streaming.detach();
+
+//    ui->video_label = new VideoReceiver(host_video, this);
+//    ui->video_label->setGeometry(100, 50, 1280, 720);
 
     connect(ui->disconnect_button, &QPushButton::clicked, this, &streamer_window::disconnect_button);
 }
@@ -34,10 +37,12 @@ streamer_window::~streamer_window()
 }
 
 void streamer_window::disconnect_button() {
-    g_main_loop_quit(_streamer.loop);
-    g_main_loop_unref(_streamer.loop);
-    _parent->show();
-    delete this;
+    _streamer.stop_run();
+    _streamer.stop_audio();
+    this->hide();
+    delete ui->video_label;
+    parentWidget()->show();
+
 }
 
 

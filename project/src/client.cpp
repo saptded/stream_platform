@@ -68,29 +68,6 @@ void Client::connect_to_server() {
     close(sock);
 }
 
-// class WORKER : public QThread {
-// public:
-//    WORKER(Client &client) : _client(client) {}
-//
-// protected:
-//    void run() override { _client.video_recieve(); }
-//
-// private:
-//    Client &_client;
-//};
-
-//void Client::start_watch() {
-    //    QThread video(&Client::video_recieve, this);
-//    std::thread video(&Client::video_recieve, this);
-//    std::thread audio(&Client::audio_recieve, this);
-//    //    WORKER worker{*this};
-//    //    worker.start();
-//    //        video_recieve();
-//    audio.join();
-//    video.join();
-    //    worker.wait();
-//}
-
 void Client::cap_act() {
     cap = cv::VideoCapture("udpsrc port=" + std::to_string(server_port) +
                                " "

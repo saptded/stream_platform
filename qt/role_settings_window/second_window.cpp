@@ -134,6 +134,7 @@ void second_window::back_button() {
             delete connect_error;
         }
     }
+    error_lay_status = 0;
     role_id = 0;
 }
 
@@ -225,16 +226,21 @@ void second_window::next_button() {
         }
     }
     if (role_id == 1) {
-        if (settings_status == 1 || settings_status == 2) {
-            max_clnts = max_clients->value();
-            _streamer.set_max_client_amount(max_clnts);
+        try {
+            if (settings_status == 1 || settings_status == 2) {
+                max_clnts = max_clients->value();
+                _streamer.set_max_client_amount(max_clnts);
 
-            cam_index = camera_index->value();
-            _streamer.set_cam_index(cam_index);
+                cam_index = camera_index->value();
+                _streamer.set_cam_index(cam_index);
+            }
+
+            streamer_win = new streamer_window(_streamer, this);
+            streamer_win->show();
+            this->hide();
+        } catch (BaseException &err) {
+            delete streamer_win;
+            _streamer.change_port();
         }
-
-        QMainWindow *streamer_win = new streamer_window(_streamer, this);
-        streamer_win->show();
-        this->hide();
     }
 }

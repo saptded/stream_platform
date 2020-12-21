@@ -19,6 +19,7 @@
 #include <QtNetwork/QtNetwork>
 #include <QtNetwork/QNetworkInterface>
 #include <cmath>
+#include "base_exception.h"
 
 struct Stgs {
     int width = 0;
@@ -49,9 +50,14 @@ class Streamer {
     std::string create_link();
     void set_cam_index(int index);
     void set_max_client_amount(int max);
+    void change_port();
+    void stop_audio();
 
-    GMainLoop *loop;
+    void stop_run();
+
+
  private:
+    bool run = true;
     int cam_index = 0;
     int port = 8080;
     Stgs settings;
@@ -60,10 +66,12 @@ class Streamer {
     std::vector<Data_client> clients;
     std::vector<cv::VideoWriter> video_ports;
     std::vector<std::thread> audio_ports;
+    std::vector<GMainLoop*> audio_loops;
+    int loops_amount = 0;
     void video_send();
     void audio_send();
     std::string get_local_ip();
-    void create_audio_port(const std::string& client_ip);
+    void create_audio_port(const std::string& client_ip, GMainLoop *loop);
     void create_video_port(const std::string& client_ip);
 };
 }

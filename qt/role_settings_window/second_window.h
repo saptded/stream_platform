@@ -53,6 +53,9 @@ class second_window : public QMainWindow {
     QLabel *connect_error;
     QLabel *invalid_link;
     QString entered_link;
+
+    QMainWindow *streamer_win;
+
     int max_clnts;
     int cam_index;
 
