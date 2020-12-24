@@ -29,6 +29,7 @@ void client::onConnect(const boost::system::error_code& error) {
 
 void client::readHandler(const boost::system::error_code& error) {
     std::cout << read_msg_.data() << std::endl;
+    emit show_message(QString::fromStdString(read_msg_.data()));
     if (!error) {
         boost::asio::async_read(socket_,
                                 boost::asio::buffer(read_msg_, read_msg_.size()),

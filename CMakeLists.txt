@@ -87,6 +87,7 @@ add_executable(main_qt2
 
 target_include_directories(main_qt PUBLIC
         chat
+        project/include
         qt/main_window
         qt/role_settings_window
         qt/client_window
@@ -98,6 +99,7 @@ target_include_directories(main_qt PUBLIC
 
 target_include_directories(main_qt2 PUBLIC
         chat
+        project/include
         qt/main_window
         qt/role_settings_window
         qt/client_window

@@ -9,7 +9,6 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include <boost/thread/thread.hpp>
-#include <QDebug>
 #include <mutex>
 
 std::mutex mtx1;
@@ -78,8 +77,7 @@ void chatRoom::broadcast(std::array<char, MAX_IP_PACK_SIZE>& msg, std::shared_pt
     mtx1.lock();
     emit show_message(QString::fromStdString(message));
     mtx1.unlock();
-    QString qstr = message.c_str();
-    qDebug() << qstr;
+
 
     recent_msgs_.push_back(formatted_msg);
     while (recent_msgs_.size() > max_recent_msgs)
