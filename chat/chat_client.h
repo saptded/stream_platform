@@ -9,8 +9,10 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include "protocol.h"
+#include <QObject>
 
-class client {
+class client : public QObject {
+    Q_OBJECT
  public:
     client(const std::array<char, MAX_NICKNAME>& nickname,
            boost::asio::io_service& io_service,
@@ -18,6 +20,9 @@ class client {
 
     void write(const std::array<char, MAX_IP_PACK_SIZE>& msg);
     void close();
+
+ signals:
+    void show_message(const QString &msg);
 
  private:
     void onConnect(const boost::system::error_code& error);

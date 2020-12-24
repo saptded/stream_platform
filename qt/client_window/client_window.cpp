@@ -15,6 +15,7 @@
 #include "protocol.h"
 #include "chat_client.h"
 #include <mutex>
+#include <QListView>
 
 client_window::client_window(sp::Client& client, QWidget *parent)
     : QMainWindow(parent)
@@ -55,6 +56,8 @@ void client_window::run_chat_client() {
 
 
         client cli(nickname, io_service, iterator);
+
+        connect(&cli, &client::show_message, this, &client_window::put_msg_into_window);
 
         std::thread t(boost::bind(&boost::asio::io_service::run, &io_service));
 
@@ -141,4 +144,8 @@ void client_window::send_button_clicked() {
     is_new_message = true;
     mtx.unlock();
 
+}
+
+void client_window::put_msg_into_window(const QString &msg) {
+    ui->chat_listview->addItem(msg);
 }
