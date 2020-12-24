@@ -211,7 +211,7 @@ void second_window::next_button() {
                 _client.get_link(tmp);
                 QMainWindow *client_win = new client_window(_client, this);
                 client_win->show();
-                this->hide();
+//                this->hide();
             } else {
                 if (error_lay_status == 3) {
                     delete connect_error;
@@ -263,7 +263,7 @@ void second_window::next_button() {
 
             streamer_win = new streamer_window(_streamer, this);
             streamer_win->show();
-            this->hide();
+//            this->hide();
 
             _streamer.change_port();
             delete data;
