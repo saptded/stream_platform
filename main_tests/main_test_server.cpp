@@ -1,13 +1,22 @@
-#include "streamer.hpp"
 #include "client.hpp"
+#include "streamer.hpp"
+#include <QApplication>
+
+
 
 int main() {
+    sp::Streamer streamer("aaaa");
 
-    sp::Streamer Mike;
+    streamer.create_link();
 
-    Mike.getting_users();
+    streamer.get_camera_settings();
 
-    Mike.start_stream();
+    std::thread gu(&sp::Streamer::getting_users, &streamer);
+    std::thread ss(&sp::Streamer::start_video_stream, &streamer);
 
 
+    gu.join();
+    ss.join();
+
+    return 0;
 }
