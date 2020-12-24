@@ -7,8 +7,8 @@
 #include <base_exception.h>
 #include <client.hpp>
 #include <client_window.h>
-#include <streamer_window.h>
 #include <streamer.hpp>
+#include <streamer_window.h>
 
 second_window::second_window(QWidget *parent) : QMainWindow(parent), ui(new Ui::second_window) {
     _parent = parent;
@@ -21,7 +21,7 @@ void second_window::on_create_button_clicked() {
     role_id = 1;
 
     if (port_status == 1) {
-//        delete data;
+        //        delete data;
     }
 
     ui->data_widget->show();
@@ -41,21 +41,35 @@ void second_window::on_create_button_clicked() {
     back = new QPushButton("Back");
     connect(back, &QPushButton::clicked, this, &second_window::back_button);
     back->setFont(my_font);
+    back->setStyleSheet("QPushButton {color: rgb(238, 238, 236)}");
+    ui->main_buttons_lay->addWidget(back);
 
     next = new QPushButton("Next");
     connect(next, &QPushButton::clicked, this, &second_window::next_button);
     next->setFont(my_font);
+    next->setStyleSheet("QPushButton {color: rgb(238, 238, 236)}");
+    ui->main_buttons_lay->addWidget(next);
+
 
     role = new QLabel("HOST", this);
     role->setFont(my_font2);
+    role->setStyleSheet("QLabel {color: rgb(238, 238, 236)}");
+    ui->label_lay->addWidget(role);
 
     link_to_conf = new QLabel("link to conference:", this);
     link_to_conf->setFont(my_font);
+    link_to_conf->setStyleSheet("QLabel {color: rgb(238, 238, 236)}");
+    ui->link_lay->addWidget(link_to_conf);
+
     data = new QLineEdit(link);
     data->setReadOnly(true);
     data->setFont(my_font);
+    data->setStyleSheet("QLineEdit {color: rgb(238, 238, 236)}");
+    ui->link_lay->addWidget(data);
 
     extra_set = new QPushButton("settings");
+    extra_set->setStyleSheet("QPushButton {color: rgb(238, 238, 236)}");
+    ui->show_extra_settings_lay->addWidget(extra_set);
     connect(extra_set, &QPushButton::clicked, this, &second_window::settings_button);
 
     data->setAlignment(Qt::AlignCenter);
@@ -64,12 +78,6 @@ void second_window::on_create_button_clicked() {
 
     ui->role_buttons_widget->hide();
 
-    ui->link_lay->addWidget(link_to_conf);
-    ui->link_lay->addWidget(data);
-    ui->label_lay->addWidget(role);
-    ui->show_extra_settings_lay->addWidget(extra_set);
-    ui->main_buttons_lay->addWidget(back);
-    ui->main_buttons_lay->addWidget(next);
 }
 
 void second_window::on_join_button_clicked() {
@@ -86,29 +94,33 @@ void second_window::on_join_button_clicked() {
     back = new QPushButton("Back");
     connect(back, &QPushButton::clicked, this, &second_window::back_button);
     back->setFont(my_font);
+    back->setStyleSheet("QPushButton {color: rgb(238, 238, 236)}");
     ui->main_buttons_lay->addWidget(back);
 
     next = new QPushButton("Next");
     connect(next, &QPushButton::clicked, this, &second_window::next_button);
     next->setFont(my_font);
+    next->setStyleSheet("QPushButton {color: rgb(238, 238, 236)}");
     ui->main_buttons_lay->addWidget(next);
 
     role = new QLabel("CLIENT", this);
     role->setFont(my_font2);
-    ui->label_lay->addWidget(role);
+    role->setStyleSheet("QLabel {color: rgb(238, 238, 236)}");
     role->setAlignment(Qt::AlignCenter);
+    ui->label_lay->addWidget(role);
 
     link_to_conf = new QLabel("enter link to conference:", this);
     link_to_conf->setFont(my_font);
-    ui->link_lay->addWidget(link_to_conf);
+    link_to_conf->setStyleSheet("QLabel {color: rgb(238, 238, 236)}");
     link_to_conf->setAlignment(Qt::AlignCenter);
+    ui->link_lay->addWidget(link_to_conf);
 
     data = new QLineEdit();
     data->setFont(my_font);
     entered_link = data->text();
-    ui->link_lay->addWidget(data);
     data->setAlignment(Qt::AlignCenter);
-
+    data->setStyleSheet("QLineEdit {color: rgb(238, 238, 236)}");
+    ui->link_lay->addWidget(data);
 
     ui->role_buttons_widget->hide();
 }
@@ -157,18 +169,22 @@ void second_window::settings_button() {
 
         m_cl = new QLabel("max clients:  ", this);
         m_cl->setFont(my_font);
+        m_cl->setStyleSheet("QLabel {color: rgb(238, 238, 236)}");
         ui->max_clients_lay->addWidget(m_cl);
 
         max_clients = new QSpinBox();
         max_clients->setFont(my_font);
+        max_clients->setStyleSheet("QSpinBox {color: rgb(238, 238, 236)}");
         ui->max_clients_lay->addWidget(max_clients);
 
         c_i = new QLabel("camera index: ", this);
         c_i->setFont(my_font);
+        c_i->setStyleSheet("QLabel {color: rgb(238, 238, 236)}");
         ui->camera_index_lay->addWidget(c_i);
 
         camera_index = new QSpinBox();
         camera_index->setFont(my_font);
+        camera_index->setStyleSheet("QSpinBox {color: rgb(238, 238, 236)}");
         ui->camera_index_lay->addWidget(camera_index);
 
         settings_status = 1;
@@ -235,31 +251,21 @@ void second_window::next_button() {
     if (role_id == 1) {
         try {
             if (settings_status == 1 || settings_status == 2) {
-                max_clnts = max_clients->value();
+                max_clnts = max_clients->value() + 1;
                 _streamer.set_max_client_amount(max_clnts);
 
                 cam_index = camera_index->value();
                 _streamer.set_cam_index(cam_index);
             }
-            if (port_status == 1) {
-
-
-            }
+            if (port_status == 1) {}
 
             port_status = 1;
-
-
 
             streamer_win = new streamer_window(_streamer, this);
             streamer_win->show();
             this->hide();
 
-            QFont my_font("Ubuntu Mono", 14);
-            my_font.setItalic(true);
-
             _streamer.change_port();
-//            link_to_conf->clear();
-//            data->clear();
             delete data;
             std::string str_link = _streamer.create_link();
             QString link = QString::fromUtf8(str_link.c_str());
@@ -268,7 +274,6 @@ void second_window::next_button() {
             data->setFont(my_font);
             data->setAlignment(Qt::AlignCenter);
             ui->link_lay->addWidget(data);
-        } catch (BaseException &err) {
-        }
+        } catch (BaseException &err) {}
     }
 }

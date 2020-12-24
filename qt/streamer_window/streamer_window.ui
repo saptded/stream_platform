@@ -13,7 +13,13 @@
   <property name="windowTitle">
    <string>streamer_window</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(39, 36, 36)</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">bachground-color: rgb(85, 87, 83)</string>
+   </property>
    <widget class="QLabel" name="video_label">
     <property name="geometry">
      <rect>
@@ -33,7 +39,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QListView" name="connected_users_listview">
+   <widget class="QListView" name="chat_listview">
     <property name="geometry">
      <rect>
       <x>1400</x>
@@ -41,6 +47,16 @@
       <width>440</width>
       <height>851</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Ubuntu Mono</family>
+      <pointsize>16</pointsize>
+      <italic>true</italic>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(238, 238, 236)</string>
     </property>
    </widget>
    <widget class="QPushButton" name="disconnect_button">
@@ -58,6 +74,9 @@
       <pointsize>20</pointsize>
       <italic>true</italic>
      </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(238, 238, 236)</string>
     </property>
     <property name="text">
      <string>disconnect</string>

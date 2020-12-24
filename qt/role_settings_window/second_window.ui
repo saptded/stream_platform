@@ -24,6 +24,9 @@
   <property name="windowTitle">
    <string>second_window</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(39, 36, 36)</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="data_widget" native="true">
     <property name="enabled">
@@ -162,6 +165,9 @@
           <kerning>true</kerning>
          </font>
         </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(238, 238, 236)</string>
+        </property>
         <property name="text">
          <string>Create the conference</string>
         </property>
@@ -184,6 +190,9 @@
           <strikeout>false</strikeout>
           <kerning>true</kerning>
          </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(238, 238, 236)</string>
         </property>
         <property name="text">
          <string>Join the conference</string>
@@ -211,6 +220,9 @@
          <pointsize>12</pointsize>
          <italic>true</italic>
         </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(238, 238, 236)</string>
        </property>
        <property name="text">
         <string>return to a start menu</string>

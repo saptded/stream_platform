@@ -79,7 +79,7 @@ void Client::cap_act() {
                            cv::CAP_GSTREAMER);
 
     if (!cap.isOpened()) {
-        throw "no signal";
+        throw BaseException("no signal");
     }
 }
 

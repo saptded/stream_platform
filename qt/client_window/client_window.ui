@@ -19,6 +19,9 @@
   <property name="windowTitle">
    <string>client_window</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(39, 36, 36)</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLabel" name="video_label">
     <property name="geometry">
@@ -39,31 +42,33 @@
      <string/>
     </property>
    </widget>
-   <widget class="QListView" name="connected_users_listview">
+   <widget class="QListView" name="chat_listview">
     <property name="geometry">
      <rect>
-      <x>1399</x>
-      <y>50</y>
+      <x>1400</x>
+      <y>130</y>
       <width>440</width>
-      <height>860</height>
+      <height>651</height>
      </rect>
     </property>
-   </widget>
-   <widget class="QListView" name="chat_listbiew">
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>790</y>
-      <width>1280</width>
-      <height>190</height>
-     </rect>
+    <property name="font">
+     <font>
+      <family>Ubuntu Mono</family>
+      <pointsize>16</pointsize>
+      <weight>75</weight>
+      <italic>true</italic>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(238, 238, 236)</string>
     </property>
    </widget>
    <widget class="QPushButton" name="disconnect_button">
     <property name="geometry">
      <rect>
-      <x>1399</x>
-      <y>920</y>
+      <x>1400</x>
+      <y>50</y>
       <width>440</width>
       <height>60</height>
      </rect>
@@ -75,8 +80,63 @@
       <italic>true</italic>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(238, 238, 236)</string>
+    </property>
     <property name="text">
      <string>disconnect</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="enter_msg_field">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>790</y>
+      <width>1280</width>
+      <height>190</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Ubuntu Mono</family>
+      <pointsize>16</pointsize>
+      <weight>75</weight>
+      <italic>true</italic>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(238, 238, 236)</string>
+    </property>
+    <property name="html">
+     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu Mono'; font-size:16pt; font-weight:600; font-style:italic;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;zcxvc xc &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="send_button">
+    <property name="geometry">
+     <rect>
+      <x>1400</x>
+      <y>790</y>
+      <width>440</width>
+      <height>190</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Ubuntu Mono</family>
+      <pointsize>42</pointsize>
+      <italic>true</italic>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(238, 238, 236)</string>
+    </property>
+    <property name="text">
+     <string>send</string>
     </property>
    </widget>
   </widget>

@@ -14,16 +14,9 @@ using namespace std::chrono_literals;
 VideoReceiver::VideoReceiver(sp::Client &client, QWidget *parent) : QLabel(parent), _client(client){
 
     connect(&_timer, &QTimer::timeout, this, &VideoReceiver::update_image);
-    _timer.start(5ms);
+    _timer.start(15ms);
 
     _parent = parent;
-
-//    try {
-//        _client.connect_to_server();
-//    }
-//    catch (BaseException &err) {
-//        delete _parent;
-//    }
 
     _client.connect_to_server();
 

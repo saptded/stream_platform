@@ -9,8 +9,6 @@ Streamer::Streamer(std::string nick) : streamer_nickname(std::move(nick)) {}
 void Streamer::create_audio_port(const std::string& client_ip, GMainLoop *loop) {
     gst_init(nullptr, nullptr);
 
-    //    loop = g_main_loop_new(nullptr, false);
-
     std::string prt = std::to_string(port + 1);
     char *c_port = const_cast<char *>(prt.c_str());
     char *c_host = const_cast<char *>(client_ip.c_str());
@@ -49,7 +47,6 @@ void Streamer::create_audio_port(const std::string& client_ip, GMainLoop *loop) 
     gst_element_set_state (pipeline, GST_STATE_NULL);
     gst_object_unref (pipeline);
     g_error_free(error);
-//    g_main_loop_unref (loop);
     g_free(descr);
 }
 
@@ -137,7 +134,6 @@ void Streamer::getting_users() {
                 ips.insert(inet_ntoa(client_sock.sin_addr));
 
                 if (client.client_nickname == "host") {
-//                    std::cout << "stream is started!" << std::endl;
                 } else {
                     std::cout << client.client_nickname << " connected" << std::endl;
                 }

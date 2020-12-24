@@ -19,6 +19,9 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(39, 36, 36)</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
@@ -45,6 +48,9 @@
          <italic>true</italic>
         </font>
        </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(238, 238, 236)</string>
+       </property>
        <property name="text">
         <string>Enter your name:</string>
        </property>
@@ -65,6 +71,9 @@
          <italic>true</italic>
         </font>
        </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(238, 238, 236)</string>
+       </property>
       </widget>
      </item>
      <item>
@@ -74,6 +83,9 @@
          <width>16777215</width>
          <height>30</height>
         </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(238, 238, 236)</string>
        </property>
        <property name="text">
         <string>Ok</string>
