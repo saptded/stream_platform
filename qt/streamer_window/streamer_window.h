@@ -21,9 +21,11 @@ class streamer_window : public QMainWindow
 public:
     streamer_window(sp::Streamer& streamer, QWidget *parent = nullptr);
     ~streamer_window();
+    void run_server_chat();
     void disconnect_button();
 
 private:
+    std::thread thread_chat_server;
     Ui::streamer_window *ui;
     QWidget *_parent;
     sp::Streamer _streamer;

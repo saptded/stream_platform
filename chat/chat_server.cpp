@@ -9,6 +9,7 @@
 #include <boost/thread/thread.hpp>
 #include "protocol.h"
 #include "chat_server.h"
+#include <QDebug>
 
 std::string getTimestamp() {
     time_t t = time(0);   // get time now
@@ -71,7 +72,9 @@ void chatRoom::broadcast(std::array<char, MAX_IP_PACK_SIZE>& msg, std::shared_pt
         }
     }
     std::string message(v.begin(), v.end());
-    std::cout << message;
+    std::cout << message << std::endl;
+    QString qstr = message.c_str();
+    qDebug() << qstr;
 
     recent_msgs_.push_back(formatted_msg);
     while (recent_msgs_.size() > max_recent_msgs)
@@ -174,7 +177,7 @@ void server::onAccept(std::shared_ptr<personInRoom> new_participant, const boost
 
     run();
 }
-
+//
 //int main() {
 //    try {
 //        std::shared_ptr<boost::asio::io_service> io_service(new boost::asio::io_service);
@@ -185,7 +188,7 @@ void server::onAccept(std::shared_ptr<personInRoom> new_participant, const boost
 //
 //        std::list < std::shared_ptr < server >> servers;
 //
-//        boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), std::atoi("8080"));
+//        boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), std::atoi("8200"));
 //        std::shared_ptr<server> a_server(new server(*io_service, *strand, endpoint));
 //        servers.push_back(a_server);
 //

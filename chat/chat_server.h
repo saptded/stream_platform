@@ -19,7 +19,6 @@ class workerThread {
     static std::mutex m;
 };
 
-std::mutex workerThread::m;
 
 class participant {
  public:
