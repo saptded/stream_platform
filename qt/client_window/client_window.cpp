@@ -47,11 +47,11 @@ void client_window::run_chat_client() {
         boost::asio::ip::tcp::resolver::iterator iterator = resolver.resolve(query);
 
 
-        std::array<char, MAX_NICKNAME> nickname = {};
+        std::array<char, MAX_NICKNAME> nickname = {""};
 
-        for(int i = 0; i < _client.nickname.size(); i++) {
-            nickname._M_elems[i] = message[i];
-            }
+        for(int i = 0; i < _client.nickname.size() && i < MAX_NICKNAME; i++) {
+            nickname._M_elems[i] = _client.nickname[i];
+        }
 
 
         client cli(nickname, io_service, iterator);
