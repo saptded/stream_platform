@@ -93,6 +93,7 @@ target_include_directories(main_qt PUBLIC
         qt/video_reciever
         qt/my_qthread
         qt/streamer_window
+        project/include
         )
 
 target_include_directories(main_qt2 PUBLIC
