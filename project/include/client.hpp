@@ -27,6 +27,7 @@ class Client {
     int get_server_port();
     void stop_gst_audio_loop();
 
+    std::string nickname;
     GMainLoop *loop;
     void audio_recieve();
     int server_port;
@@ -34,7 +35,6 @@ class Client {
  private:
     cv::VideoCapture cap;
     cv::Mat frame;
-    std::string nickname;
 };
 
 //class ClientWidget : public QWidget {
