@@ -17,12 +17,8 @@ std::string getTimestamp() {
     time_t t = time(0);   // get time now
     struct tm * now = localtime(&t);
     std::stringstream ss;
-    ss << '[' << (now->tm_year + 1900) << '-' << std::setfill('0')
-       << std::setw(2) << (now->tm_mon + 1) << '-' << std::setfill('0')
-       << std::setw(2) << now->tm_mday << ' ' << std::setfill('0')
-       << std::setw(2) << now->tm_hour << ":" << std::setfill('0')
-       << std::setw(2) << now->tm_min << ":" << std::setfill('0')
-       << std::setw(2) << now->tm_sec << "] ";
+    ss << std::setw(2) << now->tm_hour << ":" << std::setfill('0')
+       << std::setw(2) << now->tm_min << " ";
 
     return ss.str();
 }
