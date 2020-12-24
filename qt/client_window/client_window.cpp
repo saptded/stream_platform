@@ -3,6 +3,7 @@
 #include <utility>
 #include "./ui_client_window.h"
 #include "video_receiver.h"
+#include "protocol.h"
 
 client_window::client_window(sp::Client& client, QWidget *parent)
     : QMainWindow(parent)

@@ -64,6 +64,8 @@ add_executable(main_qt
         qt/streamer_window/streamer_window.cpp
         qt/streamer_window/streamer_window.ui
         project/src/base_exception.cpp
+        chat/chat_client.cpp
+        chat/chat_server.cpp
         )
 
 add_executable(main_qt2
@@ -79,9 +81,12 @@ add_executable(main_qt2
         qt/streamer_window/streamer_window.cpp
         qt/streamer_window/streamer_window.ui
         project/src/base_exception.cpp
+        chat/chat_client.cpp
+        chat/chat_server.cpp
         )
 
 target_include_directories(main_qt PUBLIC
+        chat
         qt/main_window
         qt/role_settings_window
         qt/client_window
@@ -91,6 +96,7 @@ target_include_directories(main_qt PUBLIC
         )
 
 target_include_directories(main_qt2 PUBLIC
+        chat
         qt/main_window
         qt/role_settings_window
         qt/client_window
@@ -100,8 +106,8 @@ target_include_directories(main_qt2 PUBLIC
         )
 
 
-target_link_libraries(main_qt streamer client)
-target_link_libraries(main_qt2 streamer client)
+target_link_libraries(main_qt streamer client ${Boost_LIBRARIES})
+target_link_libraries(main_qt2 streamer client ${Boost_LIBRARIES})
 
 
 #target_link_libraries(main_qt_client PRIVATE Qt5::Widgets Qt5::Core Qt5::Gui ${OpenCV_LIBS})
