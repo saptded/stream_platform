@@ -39,7 +39,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QListView" name="chat_listview">
+   <widget class="QListWidget" name="chat_listview">
     <property name="geometry">
      <rect>
       <x>1400</x>

@@ -16,15 +16,16 @@
 
 std::mutex workerThread::m;
 
+//Ui::streamer_window ui2;
+
 streamer_window::streamer_window(sp::Streamer& streamer, QWidget* parent)
     : QMainWindow(parent), ui(new Ui::streamer_window), _streamer(streamer) {
     _parent = parent;
+    ui->setupUi(this);
 
     sp::Client host_video("host");
 
     host_video.get_link(_streamer.create_link());
-
-    ui->setupUi(this);
 
     _streamer.get_camera_settings();
 
@@ -46,12 +47,16 @@ void streamer_window::run_server_chat() {
         boost::shared_ptr<boost::asio::io_service::work> work(new boost::asio::io_service::work(*io_service));
         boost::shared_ptr<boost::asio::io_service::strand> strand(new boost::asio::io_service::strand(*io_service));
 
+
+
         std::cout << "[" << std::this_thread::get_id() << "]" << "server starts" << std::endl;
 
         std::list < std::shared_ptr < server >> servers;
 
         boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), std::atoi("8200"));
         std::shared_ptr<server> a_server(new server(*io_service, *strand, endpoint));
+        connect(&a_server->room_, &chatRoom::show_message,
+                         this, &streamer_window::put_msg_into_window);
         servers.push_back(a_server);
 
 
@@ -79,4 +84,8 @@ void streamer_window::disconnect_button() {
     _streamer.stop_audio();
     _parent->show();
     delete this;
+}
+
+void streamer_window::put_msg_into_window(const QString &msg) {
+    ui->chat_listview->addItem(msg);
 }

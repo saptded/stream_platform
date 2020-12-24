@@ -23,13 +23,19 @@ public:
     ~streamer_window();
     void run_server_chat();
     void disconnect_button();
-
-private:
-    std::thread thread_chat_server;
     Ui::streamer_window *ui;
+ public slots:
+    void put_msg_into_window(const QString &msg);
+
+ private:
+    bool is_new_message = false;
+    std::string message;
+    std::thread thread_chat_server;
     QWidget *_parent;
     sp::Streamer _streamer;
     std::thread getting_usrs;
     std::thread streaming;
 };
+
+
 #endif // STREAMER_WINDOW_H
