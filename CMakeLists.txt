@@ -21,6 +21,18 @@ pkg_check_modules(GST REQUIRED gstreamer-1.0)
 include_directories(${GST_INCLUDE_DIRS})
 add_definitions(${GST_DEFINITIONS})
 
+find_package(Boost COMPONENTS system thread REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
+
+add_executable(chat_server chat/chat_server.cpp)
+target_link_libraries(chat_server ${Boost_LIBRARIES})
+
+add_executable(chat_client chat/chat_client.cpp)
+target_link_libraries(chat_client ${Boost_LIBRARIES})
+
+add_executable(chat_client2 chat/chat_client.cpp)
+target_link_libraries(chat_client2 ${Boost_LIBRARIES})
+
 add_library(streamer project/src/streamer.cpp)
 target_link_libraries(streamer ${OpenCV_LIBS})
 target_link_libraries(streamer ${GST_LIBRARIES})
