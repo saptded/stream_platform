@@ -1,14 +1,18 @@
+#include "streamer_window.h"
+#include "protocol.h"
+#include "chat_server.h"
+
 #include <string>
 #include <iostream>
-#include <list>
-#include <unordered_set>
 #include <memory>
 #include <thread>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include <boost/thread/thread.hpp>
-#include "protocol.h"
-#include "chat_server.h"
+#include <QDebug>
+#include <mutex>
+
+std::mutex mtx1;
 
 std::string getTimestamp() {
     time_t t = time(0);   // get time now
@@ -71,7 +75,11 @@ void chatRoom::broadcast(std::array<char, MAX_IP_PACK_SIZE>& msg, std::shared_pt
         }
     }
     std::string message(v.begin(), v.end());
-    std::cout << message;
+    mtx1.lock();
+    emit show_message(QString::fromStdString(message));
+    mtx1.unlock();
+    QString qstr = message.c_str();
+    qDebug() << qstr;
 
     recent_msgs_.push_back(formatted_msg);
     while (recent_msgs_.size() > max_recent_msgs)
@@ -155,10 +163,11 @@ void personInRoom::writeHandler(const boost::system::error_code& error) {
     }
 }
 
+
 server::server(boost::asio::io_service& io_service,
                boost::asio::io_service::strand& strand,
                const boost::asio::ip::tcp::endpoint& endpoint)
-               : io_service_(io_service), strand_(strand), acceptor_(io_service, endpoint) {
+               : io_service_(io_service), strand_(strand), acceptor_(io_service, endpoint){
     run();
 }
 
@@ -174,7 +183,7 @@ void server::onAccept(std::shared_ptr<personInRoom> new_participant, const boost
 
     run();
 }
-
+//
 //int main() {
 //    try {
 //        std::shared_ptr<boost::asio::io_service> io_service(new boost::asio::io_service);
@@ -185,7 +194,7 @@ void server::onAccept(std::shared_ptr<personInRoom> new_participant, const boost
 //
 //        std::list < std::shared_ptr < server >> servers;
 //
-//        boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), std::atoi("8080"));
+//        boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), std::atoi("8200"));
 //        std::shared_ptr<server> a_server(new server(*io_service, *strand, endpoint));
 //        servers.push_back(a_server);
 //

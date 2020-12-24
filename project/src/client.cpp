@@ -86,6 +86,10 @@ void Client::cap_act() {
 void Client::video_recieve(QLabel *label) {
     cap >> frame;
 
+    if (frame.empty()) {
+        throw BaseException("nothing to show");
+    }
+
         label->setFixedHeight(720);
         label->setFixedWidth(1280);
 

@@ -1,6 +1,15 @@
 #ifndef STREAM_PLATFORM_CHAT_CLIENT_H
 #define STREAM_PLATFORM_CHAT_CLIENT_H
 
+#include <deque>
+#include <array>
+#include <thread>
+#include <iostream>
+#include <cstring>
+#include <boost/bind.hpp>
+#include <boost/asio.hpp>
+#include "protocol.h"
+
 class client {
  public:
     client(const std::array<char, MAX_NICKNAME>& nickname,

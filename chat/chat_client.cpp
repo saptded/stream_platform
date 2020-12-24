@@ -1,12 +1,5 @@
-#include <deque>
-#include <array>
-#include <thread>
-#include <iostream>
-#include <cstring>
-#include <boost/bind.hpp>
-#include <boost/asio.hpp>
-#include "protocol.h"
 #include "chat_client.h"
+
 
 client::client(const std::array<char, MAX_NICKNAME>& nickname,
                boost::asio::io_service& io_service,
