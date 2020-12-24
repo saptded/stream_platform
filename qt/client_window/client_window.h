@@ -23,11 +23,12 @@ class client_window : public QMainWindow {
     void disconnect_button();
     void run_chat_server();
     void run_chat_client();
-
     ~client_window();
 
  public slots:
+
     void put_msg_into_window(const QString &msg);
+    void on_enter_msg_field_returnPressed();
 
  private:
     std::thread thread_chat_client;

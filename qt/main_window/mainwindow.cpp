@@ -61,20 +61,6 @@ void MainWindow::on_confirm_button_clicked() {
 }
 
 void MainWindow::on_enter_name_line_returnPressed() {
-    if (user_name.isEmpty() && ui->error_lay->isEmpty()) {
-        error = new QLabel("the input field is empty");
-        error->setStyleSheet("QLabel {color: rgb(238, 238, 236)}");
-        ui->error_lay->addWidget(error);
-    }
-    if (!user_name.isEmpty()) {
-        if (!ui->error_lay->isEmpty()) {
-            delete error;
-        }
-        auto *w = new second_window(this);
-        w->set_nick(user_name);
-        w->show();
-        this->hide();
-        ui->enter_name_line->clear();
-    }
+    on_confirm_button_clicked();
 }
 

@@ -140,12 +140,20 @@ void client_window::send_button_clicked() {
     QString QStr = ui->enter_msg_field->toPlainText();
     mtx.lock();
     message = QStr.toStdString();
-    qDebug() << QStr;
     is_new_message = true;
     mtx.unlock();
+    ui->enter_msg_field->clear();
 
 }
 
 void client_window::put_msg_into_window(const QString &msg) {
     ui->chat_listview->addItem(msg);
+}
+void client_window::on_enter_msg_field_returnPressed() {
+    QString QStr = ui->enter_msg_field->toPlainText();
+    mtx.lock();
+    message = QStr.toStdString();
+    is_new_message = true;
+    mtx.unlock();
+    ui->enter_msg_field->clear();
 }
